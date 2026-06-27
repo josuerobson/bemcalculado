@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Sobre o Bem Calculado — Quem Somos';
+const description = 'Conheça a equipe por trás do Bem Calculado. Nossa missão é oferecer calculadoras financeiras precisas, transparentes e atualizadas para todos os brasileiros.';
+const canonical = 'https://bemcalculado.com.br/sobre/';
+---
+
+<BaseLayout title={title} description={description} canonical={canonical}>
+  <article class="page-sobre">
+    <h1>Sobre o Bem Calculado</h1>
+
+    <p class="intro">
+      O <strong>Bem Calculado</strong> nasceu com um propósito claro: tornar o planejamento financeiro
+      acessível, preciso e transparente para todos os brasileiros. Acreditamos que informação de
+      qualidade não deve ser privilégio de poucos — e que qualquer pessoa merece ter acesso a
+      ferramentas confiáveis para tomar decisões financeiras mais conscientes.
+    </p>
+
+    <section>
+      <h2>Nossa Missão</h2>
+      <p>
+        Nossa missão é oferecer calculadoras financeiras que sejam:
+      </p>
+      <ul>
+        <li><strong>Precisas</strong> — utilizamos fórmulas reconhecidas e dados de fontes oficiais como Receita Federal, INSS, Banco Central e IBGE.</li>
+        <li><strong>Transparentes</strong> — todas as fórmulas e fontes de dados são documentadas e visíveis em cada calculadora.</li>
+        <li><strong>Acessíveis</strong> — interface simples, gratuita e pensada para qualquer pessoa, independentemente do nível de conhecimento financeiro.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Quem Somos</h2>
+      <!-- TODO: Inserir nome e bio do autor -->
+      <p>
+        [Nome do Autor] — [Bio placeholder: descrever formação e experiência em finanças,
+        tecnologia ou áreas correlatas. Incluir credenciais relevantes para reforçar a
+        autoridade do conteúdo.]
+      </p>
+    </section>
+
+    <section>
+      <h2>Nosso Compromisso com a Qualidade</h2>
+      <p>
+        Seguimos os princípios de <strong>E-E-A-T</strong> (Experiência, Especialização,
+        Autoridade e Confiabilidade) em todo o conteúdo que produzimos. Isso significa que:
+      </p>
+      <ul>
+        <li>Todas as calculadoras utilizam dados de <strong>fontes oficiais</strong> do governo brasileiro e instituições reconhecidas.</li>
+        <li>As tabelas e alíquotas são <strong>atualizadas</strong> sempre que há alterações por parte dos órgãos competentes.</li>
+        <li>Mantemos total transparência sobre as fórmulas e metodologias utilizadas em cada cálculo.</li>
+        <li>O conteúdo é revisado periodicamente para garantir precisão e relevância.</li>
+      </ul>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .page-sobre {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .intro {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  p {
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+  }
+
+  ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  li {
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+  }
+
+  section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  section h2 {
+    margin-top: 0;
+  }
+</style>

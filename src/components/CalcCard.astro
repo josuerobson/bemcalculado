@@ -1,0 +1,86 @@
+---
+interface Props {
+  nome: string;
+  slug: string;
+  descricao: string;
+  icone: string;
+  ativa: boolean;
+}
+
+const { nome, slug, descricao, icone, ativa } = Astro.props;
+
+const href = ativa ? `/calculadoras/${slug}` : undefined;
+const Tag = ativa ? 'a' : 'div';
+---
+
+<Tag class:list={['card', { 'card--active': ativa, 'card--disabled': !ativa }]} {...(href ? { href } : {})}>
+  <div class="card__icon">{icone}</div>
+  <h3 class="card__title">{nome}</h3>
+  <p class="card__desc">{descricao}</p>
+  {!ativa && <span class="card__badge">Em breve</span>}
+</Tag>
+
+<style>
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .card--active:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-color: var(--accent-dim);
+  }
+
+  .card--disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  .card__icon {
+    font-size: 1.5rem;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  .card__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .card__desc {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .card__badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--surface-raised);
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+</style>

@@ -1,0 +1,154 @@
+---
+---
+
+<a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
+
+<header class="header">
+  <div class="header__container">
+    <a href="/" class="header__logo">Bem Calculado</a>
+
+    <input type="checkbox" id="menu-toggle" class="header__toggle" aria-label="Abrir menu" />
+    <label for="menu-toggle" class="header__hamburger" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </label>
+
+    <nav class="header__nav">
+      <a href="/">Calculadoras</a>
+      <a href="/sobre">Sobre</a>
+      <a href="/metodologia">Metodologia</a>
+      <a href="/contato">Contato</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 0.5rem 1rem;
+    z-index: 1100;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    text-decoration: none;
+    border-radius: var(--radius);
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 900;
+  }
+
+  .header__container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+  }
+
+  .header__logo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .header__toggle {
+    display: none;
+  }
+
+  .header__hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+  }
+
+  .header__hamburger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 1px;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  .header__nav {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .header__nav a {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .header__nav a:hover {
+    color: var(--accent);
+  }
+
+  @media (max-width: 768px) {
+    .header__hamburger {
+      display: flex;
+    }
+
+    .header__nav {
+      position: absolute;
+      top: 4rem;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-direction: column;
+      gap: 0;
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .header__nav a {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      width: 100%;
+    }
+
+    .header__toggle:checked ~ .header__nav {
+      max-height: 20rem;
+    }
+
+    .header__toggle:checked ~ .header__hamburger span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .header__toggle:checked ~ .header__hamburger span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .header__toggle:checked ~ .header__hamburger span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+  }
+</style>

@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Termos de Uso — Bem Calculado';
+const description = 'Termos de uso do Bem Calculado. Condições para utilização das calculadoras financeiras e conteúdo do site.';
+const canonical = 'https://bemcalculado.com.br/termos-de-uso/';
+---
+
+<BaseLayout title={title} description={description} canonical={canonical}>
+  <article class="page-termos">
+    <h1>Termos de Uso</h1>
+
+    <p class="intro">
+      Ao utilizar o site <strong>Bem Calculado</strong> (bemcalculado.com.br), você concorda
+      com os termos e condições descritos abaixo. Leia atentamente antes de utilizar nossas
+      calculadoras e conteúdos.
+    </p>
+
+    <section>
+      <h2>1. Finalidade do Site</h2>
+      <p>
+        O Bem Calculado oferece calculadoras financeiras e conteúdo com <strong>finalidade
+        exclusivamente educativa e informativa</strong>. Os resultados apresentados não
+        constituem aconselhamento financeiro, tributário, jurídico ou de qualquer outra natureza
+        profissional.
+      </p>
+    </section>
+
+    <section>
+      <h2>2. Precisão das Informações</h2>
+      <p>
+        Empregamos os melhores esforços para manter os dados atualizados e precisos, utilizando
+        fontes oficiais como Receita Federal, INSS, Banco Central e IBGE. No entanto, <strong>não
+        garantimos</strong> a exatidão, completude ou atualidade de todas as informações
+        apresentadas.
+      </p>
+      <p>
+        Podem ocorrer atrasos na atualização de tabelas e alíquotas após publicações oficiais,
+        bem como situações específicas não contempladas pelos cálculos genéricos.
+      </p>
+    </section>
+
+    <section>
+      <h2>3. Propriedade Intelectual</h2>
+      <p>
+        Todo o conteúdo do Bem Calculado — incluindo textos, layout, código-fonte, logotipos e
+        elementos visuais — é protegido por direitos autorais e de propriedade intelectual.
+        É proibida a reprodução, distribuição ou modificação do conteúdo sem autorização prévia
+        por escrito.
+      </p>
+    </section>
+
+    <section>
+      <h2>4. Limitação de Responsabilidade</h2>
+      <p>
+        O Bem Calculado <strong>não se responsabiliza</strong> por quaisquer danos diretos,
+        indiretos, incidentais ou consequenciais decorrentes do uso ou da impossibilidade de
+        uso das calculadoras e informações apresentadas no site.
+      </p>
+      <p>
+        Isso inclui, mas não se limita a, perdas financeiras resultantes de decisões tomadas
+        com base nos cálculos realizados no site.
+      </p>
+    </section>
+
+    <section>
+      <h2>5. Responsabilidade do Usuário</h2>
+      <p>
+        O usuário é o <strong>único responsável</strong> pelas decisões financeiras que tomar.
+        Recomendamos sempre consultar um profissional qualificado (contador, planejador financeiro
+        ou advogado tributarista) antes de tomar decisões financeiras importantes.
+      </p>
+      <p>
+        Os resultados das calculadoras devem ser utilizados como referência e ponto de partida
+        para análises mais aprofundadas, e não como base exclusiva para decisões.
+      </p>
+    </section>
+
+    <section>
+      <h2>6. Legislação Aplicável</h2>
+      <p>
+        Estes termos de uso são regidos pelas leis da <strong>República Federativa do Brasil</strong>.
+        Qualquer disputa relacionada ao uso do site será submetida ao foro da comarca do domicílio
+        do titular do site, com exclusão de qualquer outro.
+      </p>
+    </section>
+
+    <section>
+      <h2>7. Alterações nos Termos</h2>
+      <p>
+        O Bem Calculado reserva-se o direito de alterar estes termos de uso a qualquer momento,
+        sem aviso prévio. As alterações entram em vigor imediatamente após a publicação nesta
+        página. O uso continuado do site após alterações constitui aceitação dos novos termos.
+      </p>
+      <p>
+        Recomendamos que você revise esta página periodicamente para se manter informado sobre
+        as condições de uso.
+      </p>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .page-termos {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .intro {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  p {
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+  }
+
+  section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+</style>

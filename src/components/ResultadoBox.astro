@@ -1,0 +1,38 @@
+---
+---
+
+<div class="resultado-box" id="resultado" aria-live="polite" role="region" aria-label="Resultado do cálculo">
+  <slot />
+</div>
+
+<style>
+  .resultado-box {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin: 2rem 0;
+    font-family: var(--font-mono);
+    font-size: 1.75rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+
+  .resultado-box :global(p) {
+    margin: 0 0 0.5rem;
+  }
+
+  .resultado-box :global(.valor) {
+    font-size: 2.25rem;
+    color: var(--success);
+    font-weight: 500;
+  }
+
+  .resultado-box :global(.label) {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+</style>

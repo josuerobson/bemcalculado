@@ -1,0 +1,123 @@
+---
+---
+
+<footer class="footer">
+  <div class="footer__container">
+    <div class="footer__grid">
+      <div class="footer__col">
+        <h4>Sobre</h4>
+        <p>
+          Bem Calculado oferece calculadoras financeiras gratuitas, precisas e
+          atualizadas para ajudar brasileiros a tomar melhores decisões
+          financeiras.
+        </p>
+        <a href="/sobre">Saiba mais &rarr;</a>
+      </div>
+
+      <div class="footer__col">
+        <h4>Links úteis</h4>
+        <ul>
+          <li><a href="/sobre">Sobre</a></li>
+          <li><a href="/metodologia">Metodologia</a></li>
+          <li><a href="/contato">Contato</a></li>
+          <li><a href="/politica-de-privacidade">Política de Privacidade</a></li>
+          <li><a href="/termos-de-uso">Termos de Uso</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4>Contato</h4>
+        <p>contato@bemcalculado.com.br</p>
+      </div>
+    </div>
+
+    <div class="footer__copy">
+      <p>&copy; 2025 Bem Calculado. Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 3rem 0 1.5rem;
+    margin-top: 4rem;
+  }
+
+  .footer__container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .footer__col h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin: 0 0 0.75rem;
+  }
+
+  .footer__col p {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0 0 0.5rem;
+  }
+
+  .footer__col a {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .footer__col a:hover {
+    text-decoration: underline;
+  }
+
+  .footer__col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer__col ul a {
+    color: var(--text-secondary);
+  }
+
+  .footer__col ul a:hover {
+    color: var(--accent);
+  }
+
+  .footer__copy {
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    text-align: center;
+  }
+
+  .footer__copy p {
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .footer__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,362 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CalcCard from '../components/CalcCard.astro';
+import { calculadoras } from '../data/calculadoras';
+
+const title = 'Calculadoras Financeiras Gratuitas — Bem Calculado';
+const description = 'Calculadoras financeiras gratuitas, precisas e atualizadas. Juros compostos, salário líquido, financiamento e mais. Resultados confiáveis com fontes oficiais.';
+const canonical = 'https://bemcalculado.com.br/';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Bem Calculado',
+  url: 'https://bemcalculado.com.br/',
+  description,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: 'https://bemcalculado.com.br/calculadoras/?q={search_term_string}',
+    'query-input': 'required name=search_term_string',
+  },
+};
+
+const categorias = [
+  { id: 'todas', label: 'Todas' },
+  { id: 'investimentos', label: 'Investimentos' },
+  { id: 'trabalhista', label: 'Trabalhista' },
+  { id: 'impostos', label: 'Impostos' },
+  { id: 'credito', label: 'Crédito' },
+];
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} jsonLd={jsonLd}>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__container">
+      <h1 class="hero__title">Calculadoras Financeiras Gratuitas e Confiáveis</h1>
+      <p class="hero__subtitle">
+        Resultados precisos com fórmulas transparentes e dados de fontes oficiais.
+        Simplifique suas decisões financeiras com ferramentas feitas para você.
+      </p>
+      <a href="#calculadoras" class="hero__cta">Explorar Calculadoras</a>
+    </div>
+  </section>
+
+  <!-- Calculadoras -->
+  <section id="calculadoras" class="section">
+    <div class="container">
+      <h2 class="section__title">Nossas Calculadoras</h2>
+
+      <div class="filtros" role="tablist" aria-label="Filtrar por categoria">
+        {categorias.map((cat) => (
+          <button
+            class:list={['filtro', { 'filtro--ativo': cat.id === 'todas' }]}
+            data-categoria={cat.id}
+            role="tab"
+            aria-selected={cat.id === 'todas' ? 'true' : 'false'}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      <div class="grid-calculadoras">
+        {calculadoras.map((calc) => (
+          <div class="grid-item" data-categoria={calc.categoria}>
+            <CalcCard
+              nome={calc.nome}
+              slug={calc.slug}
+              descricao={calc.descricao}
+              icone={calc.icone}
+              ativa={calc.ativa}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Como funciona -->
+  <section class="section section--alt">
+    <div class="container">
+      <h2 class="section__title">Como Funciona</h2>
+      <div class="passos">
+        <div class="passo">
+          <div class="passo__icone">1</div>
+          <h3 class="passo__titulo">Escolha a calculadora</h3>
+          <p class="passo__desc">Navegue pelas categorias e encontre a ferramenta ideal para sua necessidade.</p>
+        </div>
+        <div class="passo">
+          <div class="passo__icone">2</div>
+          <h3 class="passo__titulo">Preencha os dados</h3>
+          <p class="passo__desc">Insira os valores solicitados nos campos intuitivos e bem explicados.</p>
+        </div>
+        <div class="passo">
+          <div class="passo__icone">3</div>
+          <h3 class="passo__titulo">Veja o resultado detalhado</h3>
+          <p class="passo__desc">Receba cálculos precisos com explicações claras e fontes das fórmulas utilizadas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Por que usar -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">Por que usar o Bem Calculado?</h2>
+      <div class="beneficios">
+        <div class="beneficio">
+          <div class="beneficio__icone">&#128200;</div>
+          <h3 class="beneficio__titulo">Dados atualizados</h3>
+          <p class="beneficio__desc">Tabelas e alíquotas sempre sincronizadas com fontes oficiais do governo.</p>
+        </div>
+        <div class="beneficio">
+          <div class="beneficio__icone">&#128269;</div>
+          <h3 class="beneficio__titulo">Transparência total</h3>
+          <p class="beneficio__desc">Todas as fórmulas são abertas e documentadas. Confira cada etapa do cálculo.</p>
+        </div>
+        <div class="beneficio">
+          <div class="beneficio__icone">&#10004;&#65039;</div>
+          <h3 class="beneficio__titulo">Gratuito para sempre</h3>
+          <p class="beneficio__desc">Sem assinaturas, sem anúncios invasivos. Ferramentas de qualidade para todos.</p>
+        </div>
+        <div class="beneficio">
+          <div class="beneficio__icone">&#128274;</div>
+          <h3 class="beneficio__titulo">Privacidade garantida</h3>
+          <p class="beneficio__desc">Seus dados não são armazenados. Conformidade total com a LGPD.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const filtros = document.querySelectorAll<HTMLButtonElement>('.filtro');
+    const items = document.querySelectorAll<HTMLElement>('.grid-item');
+
+    filtros.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const cat = btn.dataset.categoria;
+
+        filtros.forEach((b) => {
+          b.classList.remove('filtro--ativo');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('filtro--ativo');
+        btn.setAttribute('aria-selected', 'true');
+
+        items.forEach((item) => {
+          if (cat === 'todas' || item.dataset.categoria === cat) {
+            item.style.display = '';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  /* Hero */
+  .hero {
+    position: relative;
+    padding: 5rem 1.5rem 4rem;
+    text-align: center;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(16, 185, 129, 0.1) 0%, transparent 60%),
+      var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero__container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+
+  .hero__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 5vw, 2.75rem);
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin: 0 0 1.25rem;
+  }
+
+  .hero__subtitle {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: var(--text-secondary);
+    max-width: 640px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .hero__cta {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .hero__cta:hover {
+    opacity: 0.9;
+  }
+
+  /* Sections */
+  .section {
+    padding: 4rem 1.5rem;
+  }
+
+  .section--alt {
+    background: var(--surface);
+  }
+
+  .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+
+  .section__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    margin: 0 0 2rem;
+  }
+
+  /* Filtros */
+  .filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .filtro {
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filtro:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+  }
+
+  .filtro--ativo {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  /* Grid */
+  .grid-calculadoras {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* Passos */
+  .passos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .passo__icone {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .passo__titulo {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem;
+  }
+
+  .passo__desc {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Beneficios */
+  .beneficios {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .beneficio {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .beneficio__icone {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .beneficio__titulo {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem;
+  }
+
+  .beneficio__desc {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  @media (max-width: 480px) {
+    .hero {
+      padding: 3rem 1rem 2.5rem;
+    }
+
+    .section {
+      padding: 3rem 1rem;
+    }
+  }
+</style>

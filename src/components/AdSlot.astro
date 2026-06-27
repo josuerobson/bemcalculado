@@ -1,0 +1,56 @@
+---
+interface Props {
+  position: 'top' | 'middle' | 'bottom';
+  className?: string;
+}
+
+const { position, className } = Astro.props;
+---
+
+<div
+  class:list={['ad-slot', `ad-slot--${position}`, className]}
+  data-position={position}
+  aria-hidden="true"
+  role="complementary"
+  aria-label="Anúncio"
+>
+  <!-- AdSense slot: ativar após aprovação -->
+</div>
+
+<style>
+  .ad-slot {
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem 0;
+  }
+
+  .ad-slot--top {
+    min-height: 100px;
+  }
+
+  .ad-slot--middle {
+    min-height: 250px;
+  }
+
+  .ad-slot--bottom {
+    min-height: 90px;
+  }
+
+  @media (max-width: 768px) {
+    .ad-slot--top {
+      min-height: 50px;
+    }
+
+    .ad-slot--middle {
+      min-height: 200px;
+    }
+
+    .ad-slot--bottom {
+      min-height: 50px;
+    }
+  }
+</style>

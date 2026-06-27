@@ -1,0 +1,111 @@
+---
+interface Props {
+  autor?: string;
+  atualizacao: string;
+  fontes?: Array<{ nome: string; url: string }>;
+}
+
+const { autor = '[Nome do autor]', atualizacao, fontes } = Astro.props;
+---
+
+<aside class="autor-box">
+  <div class="autor-box__header">
+    <div class="autor-box__avatar" aria-hidden="true"></div>
+    <div>
+      <p class="autor-box__name">{autor}</p>
+      <p class="autor-box__date">Última atualização: {atualizacao}</p>
+    </div>
+  </div>
+  <a href="/metodologia" class="autor-box__link">Ver nossa metodologia &rarr;</a>
+  {fontes && fontes.length > 0 && (
+    <div class="autor-box__fontes">
+      <p class="autor-box__fontes-title">Fontes:</p>
+      <ul>
+        {fontes.map((f) => (
+          <li><a href={f.url} target="_blank" rel="noopener noreferrer">{f.nome}</a></li>
+        ))}
+      </ul>
+    </div>
+  )}
+</aside>
+
+<style>
+  .autor-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-top: 2rem;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+  }
+
+  .autor-box__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .autor-box__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .autor-box__name {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .autor-box__date {
+    color: var(--text-muted);
+    margin: 0.125rem 0 0;
+  }
+
+  .autor-box__link {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.8125rem;
+  }
+
+  .autor-box__link:hover {
+    text-decoration: underline;
+  }
+
+  .autor-box__fontes {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .autor-box__fontes-title {
+    color: var(--text-muted);
+    margin: 0 0 0.375rem;
+    font-weight: 600;
+  }
+
+  .autor-box__fontes ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .autor-box__fontes a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+
+  .autor-box__fontes a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+</style>

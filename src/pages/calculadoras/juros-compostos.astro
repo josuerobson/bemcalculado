@@ -1,0 +1,647 @@
+---
+import CalculadoraLayout from '../../layouts/CalculadoraLayout.astro';
+import AutorBox from '../../components/AutorBox.astro';
+import ResultadoBox from '../../components/ResultadoBox.astro';
+import CalcCard from '../../components/CalcCard.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Calculadora de Juros Compostos",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "BRL"
+  }
+};
+---
+
+<CalculadoraLayout
+  title="Calculadora de Juros Compostos — Bem Calculado"
+  description="Calcule juros compostos com aportes mensais. Veja a evolução mês a mês do seu investimento com gráfico e tabela detalhada. Grátis e sem cadastro."
+  canonical="https://bemcalculado.com.br/calculadoras/juros-compostos/"
+  atualizacao="2025-06-27"
+  breadcrumbItems={[
+    { label: 'Início', href: '/' },
+    { label: 'Calculadoras', href: '/' },
+    { label: 'Juros Compostos' }
+  ]}
+  jsonLd={jsonLd}
+>
+  <h1>Calculadora de Juros Compostos</h1>
+
+  <p class="intro">
+    Os juros compostos são o principal motor de crescimento dos investimentos de longo prazo.
+    Com esta calculadora, você descobre quanto seu dinheiro pode render ao longo do tempo,
+    considerando aportes mensais regulares e o efeito dos juros sobre juros.
+  </p>
+
+  <AutorBox
+    autor="[Nome do autor]"
+    atualizacao="27 de junho de 2025"
+    fontes={[{ nome: 'Banco Central do Brasil', url: 'https://www.bcb.gov.br/' }]}
+  />
+
+  <form id="form-juros" class="calc-form" novalidate>
+    <div class="form-group">
+      <label for="valor-inicial">Valor inicial (R$)</label>
+      <span class="tooltip">Quantia que você já tem para investir hoje.</span>
+      <input type="text" id="valor-inicial" inputmode="decimal" placeholder="1.000,00" aria-describedby="erro-valor-inicial" />
+      <span class="erro" id="erro-valor-inicial" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="aporte-mensal">Aporte mensal (R$)</label>
+      <span class="tooltip">Valor que você pretende investir todo mês.</span>
+      <input type="text" id="aporte-mensal" inputmode="decimal" placeholder="500,00" aria-describedby="erro-aporte-mensal" />
+      <span class="erro" id="erro-aporte-mensal" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="taxa-juros">Taxa de juros anual (%)</label>
+      <span class="tooltip">Taxa de rendimento anual esperada, ex: 12 para 12% ao ano.</span>
+      <input type="text" id="taxa-juros" inputmode="decimal" placeholder="12" aria-describedby="erro-taxa-juros" />
+      <span class="erro" id="erro-taxa-juros" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="periodo">Período (meses)</label>
+      <span class="tooltip">Quantidade de meses que o dinheiro ficará investido.</span>
+      <input type="number" id="periodo" min="1" placeholder="24" aria-describedby="erro-periodo" />
+      <span class="erro" id="erro-periodo" role="alert"></span>
+    </div>
+
+    <button type="submit" class="btn-primary">Calcular</button>
+  </form>
+
+  <ResultadoBox>
+    <div id="resultado-principal" style="display:none;">
+      <p class="label">Montante Final</p>
+      <p class="valor" id="valor-montante"></p>
+    </div>
+
+    <div id="resultado-detalhes" style="display:none;">
+      <table class="tabela-resumo">
+        <tbody>
+          <tr>
+            <td class="label">Total Investido</td>
+            <td class="tabela-valor" id="valor-investido"></td>
+          </tr>
+          <tr>
+            <td class="label">Total em Juros</td>
+            <td class="tabela-valor" id="valor-juros"></td>
+          </tr>
+          <tr>
+            <td class="label">Montante Final</td>
+            <td class="tabela-valor" id="valor-montante-detalhe"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="grafico-evolucao" style="display:none;"></div>
+
+    <details id="tabela-evolucao" style="display:none;">
+      <summary>Ver evolução mês a mês</summary>
+      <div class="tabela-scroll">
+        <table id="tabela-mensal">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Aporte</th>
+              <th>Juros</th>
+              <th>Acumulado</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </details>
+  </ResultadoBox>
+
+  <div class="acoes" style="display:none;" id="acoes-resultado">
+    <button type="button" class="btn-secondary" id="btn-compartilhar">Compartilhar resultado</button>
+    <button type="button" class="btn-secondary" id="btn-imprimir">Imprimir</button>
+  </div>
+
+  <section class="como-calculamos">
+    <h2>Como calculamos</h2>
+    <p>A fórmula dos juros compostos com aportes mensais regulares é:</p>
+    <p class="formula">
+      M = P&middot;(1+i)<sup>n</sup> + PMT &times; [(1+i)<sup>n</sup> &minus; 1] / i
+    </p>
+    <p>Onde:</p>
+    <ul>
+      <li><strong>M</strong> = Montante final</li>
+      <li><strong>P</strong> = Capital inicial (valor investido hoje)</li>
+      <li><strong>i</strong> = Taxa de juros mensal (convertida da taxa anual)</li>
+      <li><strong>n</strong> = Número de períodos (meses)</li>
+      <li><strong>PMT</strong> = Aporte mensal</li>
+    </ul>
+    <p>A taxa mensal é obtida a partir da taxa anual pela fórmula: <code>i = (1 + taxa_anual)<sup>1/12</sup> &minus; 1</code>, garantindo a equivalência entre as taxas.</p>
+  </section>
+
+  <aside class="disclaimer">
+    <p>Esta calculadora tem fins educativos e informativos. Não constitui aconselhamento financeiro.</p>
+  </aside>
+
+  <section class="relacionadas">
+    <h2>Calculadoras Relacionadas</h2>
+    <div class="cards-grid">
+      <CalcCard
+        nome="Juros Simples"
+        slug="juros-simples"
+        descricao="Calcule rendimentos com juros simples e compare com juros compostos."
+        icone="📊"
+        ativa={false}
+      />
+      <CalcCard
+        nome="Rendimento CDB"
+        slug="rendimento-cdb"
+        descricao="Simule o rendimento de um CDB com diferentes taxas e prazos."
+        icone="🏦"
+        ativa={false}
+      />
+      <CalcCard
+        nome="Inflação"
+        slug="inflacao"
+        descricao="Calcule o impacto da inflação no poder de compra ao longo do tempo."
+        icone="📈"
+        ativa={false}
+      />
+    </div>
+  </section>
+</CalculadoraLayout>
+
+<script>
+  function parseBRL(value: string): number {
+    const cleaned = value.replace(/\./g, '').replace(',', '.').replace(/[^\d.\-]/g, '');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? NaN : num;
+  }
+
+  function formatBRL(value: number): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.erro').forEach((el) => (el.textContent = ''));
+  }
+
+  function showError(id: string, msg: string) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = msg;
+  }
+
+  function validate(): { valorInicial: number; aporteMensal: number; taxaJuros: number; periodo: number } | null {
+    clearErrors();
+    let valid = true;
+
+    const vi = parseBRL((document.getElementById('valor-inicial') as HTMLInputElement).value);
+    if (isNaN(vi) || vi < 0) {
+      showError('erro-valor-inicial', 'Informe um valor inicial válido.');
+      valid = false;
+    }
+
+    const am = parseBRL((document.getElementById('aporte-mensal') as HTMLInputElement).value);
+    if (isNaN(am) || am < 0) {
+      showError('erro-aporte-mensal', 'Informe um aporte mensal válido.');
+      valid = false;
+    }
+
+    const tj = parseBRL((document.getElementById('taxa-juros') as HTMLInputElement).value);
+    if (isNaN(tj) || tj <= 0) {
+      showError('erro-taxa-juros', 'Informe uma taxa de juros válida.');
+      valid = false;
+    }
+
+    const p = parseInt((document.getElementById('periodo') as HTMLInputElement).value, 10);
+    if (isNaN(p) || p < 1) {
+      showError('erro-periodo', 'Informe um período de pelo menos 1 mês.');
+      valid = false;
+    }
+
+    if (!valid) return null;
+    return { valorInicial: vi, aporteMensal: am, taxaJuros: tj, periodo: p };
+  }
+
+  function calcular(valorInicial: number, aporteMensal: number, taxaJuros: number, periodo: number) {
+    const taxaMensal = Math.pow(1 + taxaJuros / 100, 1 / 12) - 1;
+    const evolucao: Array<{ mes: number; aporte: number; juros: number; acumulado: number }> = [];
+    let acumulado = valorInicial;
+
+    for (let mes = 1; mes <= periodo; mes++) {
+      const saldoAntes = acumulado + aporteMensal;
+      const juros = saldoAntes * taxaMensal;
+      acumulado = saldoAntes + juros;
+      evolucao.push({
+        mes,
+        aporte: mes === 1 ? valorInicial + aporteMensal : aporteMensal,
+        juros: Math.round(juros * 100) / 100,
+        acumulado: Math.round(acumulado * 100) / 100,
+      });
+    }
+
+    const totalInvestido = valorInicial + aporteMensal * periodo;
+    const montanteFinal = Math.round(acumulado * 100) / 100;
+    const totalJuros = Math.round((montanteFinal - totalInvestido) * 100) / 100;
+
+    return { montanteFinal, totalInvestido, totalJuros, evolucao };
+  }
+
+  function renderResultados(result: ReturnType<typeof calcular>) {
+    const principal = document.getElementById('resultado-principal')!;
+    const detalhes = document.getElementById('resultado-detalhes')!;
+    const graficoContainer = document.getElementById('grafico-evolucao')!;
+    const tabelaContainer = document.getElementById('tabela-evolucao')! as HTMLDetailsElement;
+    const acoes = document.getElementById('acoes-resultado')!;
+
+    document.getElementById('valor-montante')!.textContent = formatBRL(result.montanteFinal);
+    document.getElementById('valor-investido')!.textContent = formatBRL(result.totalInvestido);
+    document.getElementById('valor-juros')!.textContent = formatBRL(result.totalJuros);
+    document.getElementById('valor-montante-detalhe')!.textContent = formatBRL(result.montanteFinal);
+
+    principal.style.display = '';
+    detalhes.style.display = '';
+    acoes.style.display = '';
+
+    // SVG bar chart
+    const evo = result.evolucao;
+    const maxVal = Math.max(...evo.map((e) => e.acumulado));
+    const chartWidth = 700;
+    const chartHeight = 300;
+    const barPadding = 1;
+    const barWidth = Math.max(2, (chartWidth - 60) / evo.length - barPadding);
+    const maxBars = evo.length;
+
+    let bars = '';
+    for (let i = 0; i < maxBars; i++) {
+      const e = evo[i];
+      const investidoAte = (i + 1 === 1) ? e.aporte : result.totalInvestido * (i + 1) / evo.length;
+      const totalHeight = (e.acumulado / maxVal) * (chartHeight - 40);
+      const investidoHeight = (Math.min(investidoAte, e.acumulado) / maxVal) * (chartHeight - 40);
+      const x = 50 + i * (barWidth + barPadding);
+      const y = chartHeight - 20 - totalHeight;
+      const yInv = chartHeight - 20 - investidoHeight;
+
+      bars += `<rect x="${x}" y="${y}" width="${barWidth}" height="${totalHeight}" fill="var(--accent, #6c5ce7)" rx="1" opacity="0.7"/>`;
+      bars += `<rect x="${x}" y="${yInv}" width="${barWidth}" height="${investidoHeight}" fill="var(--success, #00b894)" rx="1" opacity="0.5"/>`;
+    }
+
+    graficoContainer.innerHTML = `
+      <svg viewBox="0 0 ${chartWidth} ${chartHeight + 30}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gráfico de evolução do investimento" style="width:100%;height:auto;">
+        <line x1="50" y1="${chartHeight - 20}" x2="${chartWidth}" y2="${chartHeight - 20}" stroke="var(--border, #444)" stroke-width="1"/>
+        ${bars}
+        <text x="25" y="20" fill="var(--text-muted, #999)" font-size="11" font-family="var(--font-body, sans-serif)">${formatBRL(maxVal)}</text>
+        <text x="50" y="${chartHeight}" fill="var(--text-muted, #999)" font-size="11" font-family="var(--font-body, sans-serif)">Mês 1</text>
+        <text x="${chartWidth - 60}" y="${chartHeight}" fill="var(--text-muted, #999)" font-size="11" font-family="var(--font-body, sans-serif)">Mês ${evo.length}</text>
+        <rect x="${chartWidth - 180}" y="${chartHeight + 5}" width="10" height="10" fill="var(--success, #00b894)" opacity="0.5" rx="2"/>
+        <text x="${chartWidth - 165}" y="${chartHeight + 14}" fill="var(--text-muted, #999)" font-size="10" font-family="var(--font-body, sans-serif)">Investido</text>
+        <rect x="${chartWidth - 100}" y="${chartHeight + 5}" width="10" height="10" fill="var(--accent, #6c5ce7)" opacity="0.7" rx="2"/>
+        <text x="${chartWidth - 85}" y="${chartHeight + 14}" fill="var(--text-muted, #999)" font-size="10" font-family="var(--font-body, sans-serif)">Juros</text>
+      </svg>`;
+    graficoContainer.style.display = '';
+
+    // Monthly table
+    const tbody = document.querySelector('#tabela-mensal tbody')!;
+    tbody.innerHTML = evo
+      .map(
+        (e) =>
+          `<tr><td>${e.mes}</td><td>${formatBRL(e.aporte)}</td><td>${formatBRL(e.juros)}</td><td>${formatBRL(e.acumulado)}</td></tr>`
+      )
+      .join('');
+    tabelaContainer.style.display = '';
+  }
+
+  function getFormValues() {
+    return {
+      vi: (document.getElementById('valor-inicial') as HTMLInputElement).value,
+      am: (document.getElementById('aporte-mensal') as HTMLInputElement).value,
+      tj: (document.getElementById('taxa-juros') as HTMLInputElement).value,
+      p: (document.getElementById('periodo') as HTMLInputElement).value,
+    };
+  }
+
+  // Form submit
+  document.getElementById('form-juros')!.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const params = validate();
+    if (!params) return;
+    const result = calcular(params.valorInicial, params.aporteMensal, params.taxaJuros, params.periodo);
+    renderResultados(result);
+  });
+
+  // Share button
+  document.getElementById('btn-compartilhar')!.addEventListener('click', () => {
+    const vals = getFormValues();
+    const url = new URL(window.location.href.split('?')[0]);
+    url.searchParams.set('vi', vals.vi);
+    url.searchParams.set('am', vals.am);
+    url.searchParams.set('tj', vals.tj);
+    url.searchParams.set('p', vals.p);
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      const btn = document.getElementById('btn-compartilhar')!;
+      btn.textContent = 'Link copiado!';
+      setTimeout(() => (btn.textContent = 'Compartilhar resultado'), 2000);
+    });
+  });
+
+  // Print button
+  document.getElementById('btn-imprimir')!.addEventListener('click', () => {
+    window.print();
+  });
+
+  // Permalink support: auto-fill from URL params
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const vi = params.get('vi');
+    const am = params.get('am');
+    const tj = params.get('tj');
+    const p = params.get('p');
+
+    if (vi && am && tj && p) {
+      (document.getElementById('valor-inicial') as HTMLInputElement).value = vi;
+      (document.getElementById('aporte-mensal') as HTMLInputElement).value = am;
+      (document.getElementById('taxa-juros') as HTMLInputElement).value = tj;
+      (document.getElementById('periodo') as HTMLInputElement).value = p;
+
+      const validated = validate();
+      if (validated) {
+        const result = calcular(validated.valorInicial, validated.aporteMensal, validated.taxaJuros, validated.periodo);
+        renderResultados(result);
+      }
+    }
+  });
+</script>
+
+<style>
+  h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+  }
+
+  .intro {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0 0 0.5rem;
+  }
+
+  .calc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .form-group label {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+  }
+
+  .tooltip {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .form-group input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+  }
+
+  .erro {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--error, #e74c3c);
+    min-height: 1rem;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.875rem 2rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.9;
+  }
+
+  .tabela-resumo {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+  }
+
+  .tabela-resumo td {
+    padding: 0.625rem 0;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+  }
+
+  .tabela-resumo .label {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .tabela-resumo .tabela-valor {
+    text-align: right;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  #grafico-evolucao {
+    margin: 2rem 0;
+  }
+
+  #tabela-evolucao {
+    margin: 1rem 0;
+  }
+
+  #tabela-evolucao summary {
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--accent);
+    padding: 0.5rem 0;
+  }
+
+  .tabela-scroll {
+    overflow-x: auto;
+    margin-top: 0.75rem;
+  }
+
+  #tabela-mensal {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+  }
+
+  #tabela-mensal th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  #tabela-mensal td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  #tabela-mensal tr:hover td {
+    background: var(--surface);
+  }
+
+  .acoes {
+    display: flex;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.625rem 1.25rem;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+  }
+
+  .como-calculamos {
+    margin: 3rem 0 2rem;
+  }
+
+  .como-calculamos h2 {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+  }
+
+  .como-calculamos p,
+  .como-calculamos li {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .como-calculamos ul {
+    padding-left: 1.25rem;
+    margin: 0.75rem 0;
+  }
+
+  .como-calculamos li {
+    margin-bottom: 0.375rem;
+  }
+
+  .formula {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    color: var(--accent);
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .como-calculamos code {
+    background: var(--surface);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--accent);
+  }
+
+  .disclaimer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .disclaimer p {
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .relacionadas {
+    margin: 3rem 0 1rem;
+  }
+
+  .relacionadas h2 {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.25rem;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+</style>
