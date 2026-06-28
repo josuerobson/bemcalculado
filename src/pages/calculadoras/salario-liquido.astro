@@ -1,0 +1,685 @@
+---
+import CalculadoraLayout from '../../layouts/CalculadoraLayout.astro';
+import AutorBox from '../../components/AutorBox.astro';
+import ResultadoBox from '../../components/ResultadoBox.astro';
+import CalcCard from '../../components/CalcCard.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Calculadora de Salário Líquido",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "BRL"
+  }
+};
+---
+
+<CalculadoraLayout
+  title="Calculadora de Salário Líquido 2025 — Bem Calculado"
+  description="Calcule seu salário líquido com desconto de INSS e IRRF 2025. Veja quanto você realmente recebe após os descontos obrigatórios. Grátis e sem cadastro."
+  canonical="https://bemcalculado.com.br/calculadoras/salario-liquido/"
+  atualizacao="2026-06-28"
+  breadcrumbItems={[
+    { label: 'Início', href: '/' },
+    { label: 'Calculadoras', href: '/' },
+    { label: 'Salário Líquido' }
+  ]}
+  jsonLd={jsonLd}
+>
+  <h1>Calculadora de Salário Líquido</h1>
+
+  <p class="intro">
+    Descubra quanto você realmente recebe após os descontos de INSS e Imposto de Renda.
+    Esta calculadora aplica as tabelas progressivas de 2025 para calcular seu salário líquido
+    de forma precisa, considerando o número de dependentes.
+  </p>
+
+  <AutorBox
+    autor="Josué R M de Souza"
+    atualizacao="28 de junho de 2026"
+    fontes={[
+      { nome: 'INSS', url: 'https://www.gov.br/inss' },
+      { nome: 'Receita Federal', url: 'https://www.gov.br/receitafederal' }
+    ]}
+  />
+
+  <form id="form-salario" class="calc-form" novalidate>
+    <div class="form-group">
+      <label for="salario-bruto">Salário Bruto (R$)</label>
+      <span class="hint">Seu salário mensal antes dos descontos.</span>
+      <input type="text" id="salario-bruto" inputmode="decimal" placeholder="5.000,00" aria-describedby="erro-salario-bruto" />
+      <span class="erro" id="erro-salario-bruto" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="dependentes">Número de dependentes</label>
+      <span class="hint">Cada dependente reduz a base de cálculo do IRRF em R$ 189,59.</span>
+      <input type="number" id="dependentes" min="0" value="0" aria-describedby="erro-dependentes" />
+      <span class="erro" id="erro-dependentes" role="alert"></span>
+    </div>
+
+    <button type="submit" class="btn-primary">Calcular</button>
+  </form>
+
+  <ResultadoBox>
+    <div id="resultado-principal" style="display:none;">
+      <p class="label">Salário Líquido</p>
+      <p class="valor" id="valor-liquido"></p>
+    </div>
+
+    <div id="resultado-detalhes" style="display:none;">
+      <table class="tabela-resumo">
+        <tbody>
+          <tr>
+            <td class="label">Salário Bruto</td>
+            <td class="tabela-valor" id="valor-bruto"></td>
+          </tr>
+          <tr>
+            <td class="label">Desconto INSS</td>
+            <td class="tabela-valor desconto" id="valor-inss"></td>
+          </tr>
+          <tr>
+            <td class="label">Desconto IRRF</td>
+            <td class="tabela-valor desconto" id="valor-irrf"></td>
+          </tr>
+          <tr>
+            <td class="label">Total de Descontos</td>
+            <td class="tabela-valor desconto" id="valor-descontos"></td>
+          </tr>
+          <tr>
+            <td class="label"><strong>Salário Líquido</strong></td>
+            <td class="tabela-valor" id="valor-liquido-detalhe"><strong></strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <details id="tabela-faixas" style="display:none;">
+      <summary>Ver detalhamento por faixa</summary>
+      <div class="tabela-scroll">
+        <h3 class="faixa-titulo">Faixas do INSS</h3>
+        <table id="tabela-inss">
+          <thead>
+            <tr>
+              <th>Faixa</th>
+              <th>Alíquota</th>
+              <th>Base</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <h3 class="faixa-titulo">Faixas do IRRF</h3>
+        <table id="tabela-irrf">
+          <thead>
+            <tr>
+              <th>Faixa</th>
+              <th>Alíquota</th>
+              <th>Base</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </details>
+  </ResultadoBox>
+
+  <div class="acoes" style="display:none;" id="acoes-resultado">
+    <button type="button" class="btn-secondary" id="btn-compartilhar">Compartilhar resultado</button>
+    <button type="button" class="btn-secondary" id="btn-imprimir">Imprimir</button>
+  </div>
+
+  <section class="como-calculamos">
+    <h2>Como calculamos</h2>
+
+    <h3>1. Desconto do INSS (progressivo)</h3>
+    <p>O INSS é calculado de forma progressiva, ou seja, cada faixa salarial tem uma alíquota diferente. Você paga a alíquota de cada faixa apenas sobre a parcela do salário que se encaixa nela:</p>
+    <div class="formula">
+      Até R$ 1.518,00 → 7,5%<br/>
+      De R$ 1.518,01 a R$ 2.793,88 → 9%<br/>
+      De R$ 2.793,89 a R$ 5.563,94 → 12%<br/>
+      De R$ 5.563,95 a R$ 8.157,41 → 14%
+    </div>
+    <p>Salários acima de R$ 8.157,41 pagam INSS apenas até o teto.</p>
+
+    <h3>2. Desconto do IRRF</h3>
+    <p>A base de cálculo do IRRF é o salário bruto menos o INSS e menos R$ 189,59 por dependente. Sobre essa base, aplica-se a tabela:</p>
+    <div class="formula">
+      Até R$ 2.259,20 → Isento<br/>
+      De R$ 2.259,21 a R$ 2.826,65 → 7,5% (dedução R$ 169,44)<br/>
+      De R$ 2.826,66 a R$ 3.751,05 → 15% (dedução R$ 381,44)<br/>
+      De R$ 3.751,06 a R$ 4.664,68 → 22,5% (dedução R$ 662,77)<br/>
+      Acima de R$ 4.664,68 → 27,5% (dedução R$ 896,00)
+    </div>
+
+    <h3>3. Salário Líquido</h3>
+    <p>O salário líquido é calculado pela fórmula:</p>
+    <div class="formula">
+      Salário Líquido = Salário Bruto &minus; INSS &minus; IRRF
+    </div>
+  </section>
+
+  <aside class="disclaimer">
+    <p>Esta calculadora tem fins educativos e informativos. Os valores são aproximados e podem não refletir descontos adicionais como vale-transporte, plano de saúde ou contribuições sindicais. Não constitui aconselhamento financeiro ou tributário.</p>
+  </aside>
+
+  <section class="relacionadas">
+    <h2>Calculadoras Relacionadas</h2>
+    <div class="cards-grid">
+      <CalcCard
+        nome="IRRF"
+        slug="irrf"
+        descricao="Calcule o Imposto de Renda Retido na Fonte sobre seu salário."
+        icone="🧾"
+        ativa={true}
+      />
+      <CalcCard
+        nome="Juros Compostos"
+        slug="juros-compostos"
+        descricao="Calcule o rendimento dos seus investimentos com juros compostos."
+        icone="📈"
+        ativa={true}
+      />
+    </div>
+  </section>
+</CalculadoraLayout>
+
+<script>
+  function parseBRL(value: string): number {
+    const cleaned = value.replace(/\./g, '').replace(',', '.').replace(/[^\d.\-]/g, '');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? NaN : num;
+  }
+
+  function formatBRL(value: number): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.erro').forEach((el) => (el.textContent = ''));
+  }
+
+  function showError(id: string, msg: string) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = msg;
+  }
+
+  function validate(): { salarioBruto: number; dependentes: number } | null {
+    clearErrors();
+    let valid = true;
+
+    const sb = parseBRL((document.getElementById('salario-bruto') as HTMLInputElement).value);
+    if (isNaN(sb) || sb <= 0) {
+      showError('erro-salario-bruto', 'Informe um salário bruto válido.');
+      valid = false;
+    }
+
+    const dep = parseInt((document.getElementById('dependentes') as HTMLInputElement).value, 10);
+    if (isNaN(dep) || dep < 0) {
+      showError('erro-dependentes', 'Informe um número de dependentes válido.');
+      valid = false;
+    }
+
+    if (!valid) return null;
+    return { salarioBruto: sb, dependentes: dep };
+  }
+
+  interface FaixaDetalhe {
+    faixa: string;
+    aliquota: string;
+    base: number;
+    valor: number;
+  }
+
+  function calcularINSS(salario: number): { total: number; faixas: FaixaDetalhe[] } {
+    const faixas = [
+      { min: 0, max: 1518.00, aliq: 0.075 },
+      { min: 1518.01, max: 2793.88, aliq: 0.09 },
+      { min: 2793.89, max: 5563.94, aliq: 0.12 },
+      { min: 5563.95, max: 8157.41, aliq: 0.14 },
+    ];
+
+    let total = 0;
+    const detalhes: FaixaDetalhe[] = [];
+    const salarioCalc = Math.min(salario, 8157.41);
+
+    for (const f of faixas) {
+      if (salarioCalc < f.min) break;
+      const base = Math.min(salarioCalc, f.max) - f.min + (f.min === 0 ? 0 : 1) ;
+      // Recalculate properly: base is the portion within this bracket
+      const limiteInferior = f.min === 0 ? 0 : f.min - 0.01;
+      const baseCalc = Math.min(salarioCalc, f.max) - limiteInferior;
+      if (baseCalc <= 0) break;
+      const valor = Math.round(baseCalc * f.aliq * 100) / 100;
+      total += valor;
+      detalhes.push({
+        faixa: f.min === 0 ? `Até ${formatBRL(f.max)}` : `${formatBRL(f.min)} a ${formatBRL(f.max)}`,
+        aliquota: `${(f.aliq * 100).toFixed(1)}%`,
+        base: Math.round(baseCalc * 100) / 100,
+        valor,
+      });
+    }
+
+    return { total: Math.round(total * 100) / 100, faixas: detalhes };
+  }
+
+  function calcularIRRF(salario: number, inss: number, dependentes: number): { total: number; faixas: FaixaDetalhe[] } {
+    const deducaoDependente = 189.59;
+    const baseCalculo = salario - inss - (dependentes * deducaoDependente);
+
+    if (baseCalculo <= 2259.20) {
+      return { total: 0, faixas: [{ faixa: 'Isento', aliquota: '0%', base: baseCalculo, valor: 0 }] };
+    }
+
+    const faixas = [
+      { min: 0, max: 2259.20, aliq: 0, deducao: 0 },
+      { min: 2259.21, max: 2826.65, aliq: 0.075, deducao: 169.44 },
+      { min: 2826.66, max: 3751.05, aliq: 0.15, deducao: 381.44 },
+      { min: 3751.06, max: 4664.68, aliq: 0.225, deducao: 662.77 },
+      { min: 4664.69, max: Infinity, aliq: 0.275, deducao: 896.00 },
+    ];
+
+    // Find applicable bracket
+    let irrf = 0;
+    let faixaAplicada: FaixaDetalhe[] = [];
+
+    for (const f of faixas) {
+      if (baseCalculo >= f.min) {
+        if (baseCalculo <= f.max || f.max === Infinity) {
+          irrf = Math.round((baseCalculo * f.aliq - f.deducao) * 100) / 100;
+          if (irrf < 0) irrf = 0;
+          faixaAplicada = [{
+            faixa: f.max === Infinity ? `Acima de ${formatBRL(f.min)}` : `${formatBRL(f.min)} a ${formatBRL(f.max)}`,
+            aliquota: `${(f.aliq * 100).toFixed(1)}%`,
+            base: Math.round(baseCalculo * 100) / 100,
+            valor: irrf,
+          }];
+          break;
+        }
+      }
+    }
+
+    return { total: irrf, faixas: faixaAplicada };
+  }
+
+  function renderResultados(salarioBruto: number, inssResult: ReturnType<typeof calcularINSS>, irrfResult: ReturnType<typeof calcularIRRF>) {
+    const totalDescontos = inssResult.total + irrfResult.total;
+    const salarioLiquido = Math.round((salarioBruto - totalDescontos) * 100) / 100;
+
+    const principal = document.getElementById('resultado-principal')!;
+    const detalhes = document.getElementById('resultado-detalhes')!;
+    const tabelaFaixas = document.getElementById('tabela-faixas')!;
+    const acoes = document.getElementById('acoes-resultado')!;
+
+    document.getElementById('valor-liquido')!.textContent = formatBRL(salarioLiquido);
+    document.getElementById('valor-bruto')!.textContent = formatBRL(salarioBruto);
+    document.getElementById('valor-inss')!.textContent = `- ${formatBRL(inssResult.total)}`;
+    document.getElementById('valor-irrf')!.textContent = `- ${formatBRL(irrfResult.total)}`;
+    document.getElementById('valor-descontos')!.textContent = `- ${formatBRL(totalDescontos)}`;
+    document.getElementById('valor-liquido-detalhe')!.innerHTML = `<strong>${formatBRL(salarioLiquido)}</strong>`;
+
+    principal.style.display = '';
+    detalhes.style.display = '';
+    acoes.style.display = '';
+
+    // INSS breakdown table
+    const tbodyINSS = document.querySelector('#tabela-inss tbody')!;
+    tbodyINSS.innerHTML = inssResult.faixas
+      .map(f => `<tr><td>${f.faixa}</td><td>${f.aliquota}</td><td>${formatBRL(f.base)}</td><td>${formatBRL(f.valor)}</td></tr>`)
+      .join('');
+
+    // IRRF breakdown table
+    const tbodyIRRF = document.querySelector('#tabela-irrf tbody')!;
+    tbodyIRRF.innerHTML = irrfResult.faixas
+      .map(f => `<tr><td>${f.faixa}</td><td>${f.aliquota}</td><td>${formatBRL(f.base)}</td><td>${formatBRL(f.valor)}</td></tr>`)
+      .join('');
+
+    tabelaFaixas.style.display = '';
+  }
+
+  // Form submit
+  document.getElementById('form-salario')!.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const params = validate();
+    if (!params) return;
+    const inssResult = calcularINSS(params.salarioBruto);
+    const irrfResult = calcularIRRF(params.salarioBruto, inssResult.total, params.dependentes);
+    renderResultados(params.salarioBruto, inssResult, irrfResult);
+  });
+
+  // Share button
+  document.getElementById('btn-compartilhar')!.addEventListener('click', () => {
+    const sb = (document.getElementById('salario-bruto') as HTMLInputElement).value;
+    const dep = (document.getElementById('dependentes') as HTMLInputElement).value;
+    const url = new URL(window.location.href.split('?')[0]);
+    url.searchParams.set('sb', sb);
+    url.searchParams.set('dep', dep);
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      const btn = document.getElementById('btn-compartilhar')!;
+      btn.textContent = 'Link copiado!';
+      setTimeout(() => (btn.textContent = 'Compartilhar resultado'), 2000);
+    });
+  });
+
+  // Print button
+  document.getElementById('btn-imprimir')!.addEventListener('click', () => {
+    window.print();
+  });
+
+  // Permalink support
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const sb = params.get('sb');
+    const dep = params.get('dep');
+
+    if (sb) {
+      (document.getElementById('salario-bruto') as HTMLInputElement).value = sb;
+      if (dep) (document.getElementById('dependentes') as HTMLInputElement).value = dep;
+
+      const validated = validate();
+      if (validated) {
+        const inssResult = calcularINSS(validated.salarioBruto);
+        const irrfResult = calcularIRRF(validated.salarioBruto, inssResult.total, validated.dependentes);
+        renderResultados(validated.salarioBruto, inssResult, irrfResult);
+      }
+    }
+  });
+</script>
+
+<style>
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .intro {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0 0 0.5rem;
+  }
+
+  .calc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 2rem 0;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+  }
+
+  .hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .form-group input {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .erro {
+    font-size: 0.75rem;
+    color: var(--danger);
+    min-height: 1rem;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .tabela-resumo {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+  }
+
+  .tabela-resumo td {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+  }
+
+  .tabela-resumo .label {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .tabela-resumo .tabela-valor {
+    text-align: right;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .tabela-resumo .desconto {
+    color: var(--danger);
+  }
+
+  .faixa-titulo {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  #tabela-faixas { margin: 1rem 0; }
+
+  #tabela-faixas summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--accent);
+    padding: 0.5rem 0;
+  }
+
+  .tabela-scroll {
+    overflow-x: auto;
+    margin-top: 0.75rem;
+  }
+
+  #tabela-inss,
+  #tabela-irrf {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+  }
+
+  #tabela-inss th,
+  #tabela-irrf th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  #tabela-inss td,
+  #tabela-irrf td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  #tabela-inss tr:hover td,
+  #tabela-irrf tr:hover td {
+    background: var(--accent-soft);
+  }
+
+  .acoes {
+    display: flex;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent-border);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .como-calculamos {
+    margin: 3rem 0 2rem;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .como-calculamos h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .como-calculamos h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  .como-calculamos h3:first-of-type {
+    margin-top: 0;
+  }
+
+  .como-calculamos p,
+  .como-calculamos li {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .como-calculamos ul {
+    padding-left: 1.25rem;
+    margin: 0.75rem 0;
+    list-style: disc;
+  }
+
+  .como-calculamos li { margin-bottom: 0.375rem; }
+
+  .formula {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.9375rem;
+    color: var(--accent);
+    text-align: center;
+    margin: 1rem 0;
+    line-height: 1.8;
+  }
+
+  .como-calculamos code {
+    background: var(--accent-soft);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--accent);
+  }
+
+  .disclaimer {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .disclaimer p {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .relacionadas { margin: 3rem 0 1rem; }
+
+  .relacionadas h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.01em;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+</style>

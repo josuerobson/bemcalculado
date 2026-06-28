@@ -1,0 +1,520 @@
+---
+import CalculadoraLayout from '../../layouts/CalculadoraLayout.astro';
+import AutorBox from '../../components/AutorBox.astro';
+import ResultadoBox from '../../components/ResultadoBox.astro';
+import CalcCard from '../../components/CalcCard.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Calculadora de Rentabilidade Real",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "BRL"
+  }
+};
+---
+
+<CalculadoraLayout
+  title="Calculadora de Rentabilidade Real — Bem Calculado"
+  description="Calcule a rentabilidade real do seu investimento descontando a inflação. Use a fórmula de Fisher para descobrir o ganho real. Grátis e sem cadastro."
+  canonical="https://bemcalculado.com.br/calculadoras/rentabilidade-real/"
+  atualizacao="2026-06-28"
+  breadcrumbItems={[
+    { label: 'Início', href: '/' },
+    { label: 'Calculadoras', href: '/' },
+    { label: 'Rentabilidade Real' }
+  ]}
+  jsonLd={jsonLd}
+>
+  <h1>Calculadora de Rentabilidade Real</h1>
+
+  <p class="intro">
+    A rentabilidade real mostra quanto seu investimento realmente rendeu depois de descontar a inflação.
+    Um rendimento de 12% ao ano pode parecer ótimo, mas se a inflação foi de 6%, seu ganho real de poder
+    de compra foi bem menor. Use esta calculadora para descobrir o retorno verdadeiro.
+  </p>
+
+  <AutorBox
+    autor="Josué R M de Souza"
+    atualizacao="28 de junho de 2026"
+    fontes={[
+      { nome: 'Banco Central do Brasil', url: 'https://www.bcb.gov.br/' },
+      { nome: 'IBGE', url: 'https://www.ibge.gov.br/' }
+    ]}
+  />
+
+  <form id="form-rentabilidade" class="calc-form" novalidate>
+    <div class="form-group">
+      <label for="taxa-nominal">Rentabilidade nominal (% ao ano)</label>
+      <span class="hint">Taxa de rendimento bruta do investimento, ex: 12 para 12% a.a.</span>
+      <input type="text" id="taxa-nominal" inputmode="decimal" placeholder="12" aria-describedby="erro-taxa-nominal" />
+      <span class="erro" id="erro-taxa-nominal" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="taxa-inflacao">Taxa de inflação (% ao ano)</label>
+      <span class="hint">Inflação do período (IPCA), ex: 4,5 para 4,5% a.a.</span>
+      <input type="text" id="taxa-inflacao" inputmode="decimal" placeholder="4,5" aria-describedby="erro-taxa-inflacao" />
+      <span class="erro" id="erro-taxa-inflacao" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="valor-investido">Valor investido (R$) <span class="opcional">(opcional)</span></label>
+      <span class="hint">Informe para ver a evolução do montante em valores nominais e reais.</span>
+      <input type="text" id="valor-investido" inputmode="decimal" placeholder="10.000,00" aria-describedby="erro-valor-investido" />
+      <span class="erro" id="erro-valor-investido" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="periodo">Período (anos) <span class="opcional">(opcional)</span></label>
+      <span class="hint">Padrão: 1 ano. Informe para projetar montantes ao longo do tempo.</span>
+      <input type="number" id="periodo" min="1" placeholder="1" aria-describedby="erro-periodo" />
+      <span class="erro" id="erro-periodo" role="alert"></span>
+    </div>
+
+    <button type="submit" class="btn-primary">Calcular</button>
+  </form>
+
+  <ResultadoBox>
+    <div id="resultado-principal" style="display:none;">
+      <p class="label">Rentabilidade Real</p>
+      <p class="valor" id="valor-taxa-real"></p>
+    </div>
+
+    <div id="resultado-detalhes" style="display:none;">
+      <table class="tabela-resumo">
+        <tbody>
+          <tr>
+            <td class="label">Rentabilidade Nominal</td>
+            <td class="tabela-valor" id="res-nominal"></td>
+          </tr>
+          <tr>
+            <td class="label">Inflação</td>
+            <td class="tabela-valor" id="res-inflacao"></td>
+          </tr>
+          <tr>
+            <td class="label">Rentabilidade Real</td>
+            <td class="tabela-valor" id="res-real"></td>
+          </tr>
+          <tr>
+            <td class="label">Perda Inflacionária</td>
+            <td class="tabela-valor" id="res-perda"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="resultado-montantes" style="display:none;">
+      <h3 class="subtitulo-resultado">Projeção do Montante</h3>
+      <table class="tabela-resumo">
+        <tbody>
+          <tr>
+            <td class="label">Valor Investido</td>
+            <td class="tabela-valor" id="res-valor-investido"></td>
+          </tr>
+          <tr>
+            <td class="label">Valor Final Nominal</td>
+            <td class="tabela-valor" id="res-final-nominal"></td>
+          </tr>
+          <tr>
+            <td class="label">Valor Final Real</td>
+            <td class="tabela-valor" id="res-final-real"></td>
+          </tr>
+          <tr>
+            <td class="label">Perda pelo efeito da inflação</td>
+            <td class="tabela-valor perda" id="res-perda-valor"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ResultadoBox>
+
+  <section class="como-calculamos">
+    <h2>Como calculamos</h2>
+    <p>Utilizamos a <strong>fórmula de Fisher</strong>, que é a forma matematicamente correta de descontar a inflação de uma taxa de rendimento:</p>
+    <p class="formula">
+      Taxa Real = [(1 + i<sub>nominal</sub>) / (1 + i<sub>inflação</sub>) &minus; 1] &times; 100
+    </p>
+    <p>Onde:</p>
+    <ul>
+      <li><strong>i<sub>nominal</sub></strong> = Taxa de rendimento nominal (em decimal, ex: 0,12 para 12%)</li>
+      <li><strong>i<sub>inflação</sub></strong> = Taxa de inflação do período (em decimal, ex: 0,045 para 4,5%)</li>
+    </ul>
+    <p>
+      Esta fórmula é mais precisa do que a subtração simples (nominal &minus; inflação), pois considera o
+      efeito composto da inflação sobre o rendimento.
+    </p>
+    <p>
+      <strong>Benchmarks comuns:</strong> A taxa Selic e o CDI são as principais referências do mercado
+      brasileiro. Para medir a inflação, o índice mais utilizado é o <strong>IPCA</strong>, calculado pelo IBGE.
+      Uma regra prática: se a Selic está em 10,5% a.a. e o IPCA em 4,5% a.a., a rentabilidade real de um
+      investimento atrelado ao CDI será próxima de 5,74% a.a.
+    </p>
+  </section>
+
+  <aside class="disclaimer">
+    <p>Esta calculadora tem fins educativos e informativos. Não constitui aconselhamento financeiro. Rentabilidades passadas não garantem resultados futuros.</p>
+  </aside>
+
+  <section class="relacionadas">
+    <h2>Calculadoras Relacionadas</h2>
+    <div class="cards-grid">
+      <CalcCard
+        nome="Correção pela Inflação"
+        slug="correcao-pela-inflacao"
+        descricao="Corrija valores monetários pela inflação e veja o poder de compra ao longo do tempo."
+        icone="📈"
+        ativa={true}
+      />
+      <CalcCard
+        nome="Juros Compostos"
+        slug="juros-compostos"
+        descricao="Calcule juros compostos com aportes mensais e veja a evolução do seu investimento."
+        icone="💰"
+        ativa={true}
+      />
+    </div>
+  </section>
+</CalculadoraLayout>
+
+<script>
+  function parseBRL(value: string): number {
+    const cleaned = value.replace(/\./g, '').replace(',', '.').replace(/[^\d.\-]/g, '');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? NaN : num;
+  }
+
+  function formatBRL(value: number): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  }
+
+  function formatPct(value: number): string {
+    return value.toFixed(2).replace('.', ',') + '% a.a.';
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.erro').forEach((el) => (el.textContent = ''));
+  }
+
+  function showError(id: string, msg: string) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = msg;
+  }
+
+  function validate(): { nominal: number; inflacao: number; valor: number | null; periodo: number } | null {
+    clearErrors();
+    let valid = true;
+
+    const nominal = parseBRL((document.getElementById('taxa-nominal') as HTMLInputElement).value);
+    if (isNaN(nominal)) {
+      showError('erro-taxa-nominal', 'Informe a rentabilidade nominal.');
+      valid = false;
+    }
+
+    const inflacao = parseBRL((document.getElementById('taxa-inflacao') as HTMLInputElement).value);
+    if (isNaN(inflacao)) {
+      showError('erro-taxa-inflacao', 'Informe a taxa de inflação.');
+      valid = false;
+    }
+
+    const valorStr = (document.getElementById('valor-investido') as HTMLInputElement).value.trim();
+    let valor: number | null = null;
+    if (valorStr) {
+      valor = parseBRL(valorStr);
+      if (isNaN(valor) || valor <= 0) {
+        showError('erro-valor-investido', 'Informe um valor investido válido.');
+        valid = false;
+      }
+    }
+
+    const periodoStr = (document.getElementById('periodo') as HTMLInputElement).value.trim();
+    let periodo = 1;
+    if (periodoStr) {
+      periodo = parseInt(periodoStr, 10);
+      if (isNaN(periodo) || periodo < 1) {
+        showError('erro-periodo', 'Informe um período de pelo menos 1 ano.');
+        valid = false;
+      }
+    }
+
+    if (!valid) return null;
+    return { nominal, inflacao, valor, periodo };
+  }
+
+  function calcular(nominal: number, inflacao: number, valor: number | null, periodo: number) {
+    // Fisher formula
+    const taxaReal = ((1 + nominal / 100) / (1 + inflacao / 100) - 1) * 100;
+    const perdaInflacionaria = nominal - taxaReal;
+
+    let finalNominal: number | null = null;
+    let finalReal: number | null = null;
+    let perdaValor: number | null = null;
+
+    if (valor !== null) {
+      finalNominal = valor * Math.pow(1 + nominal / 100, periodo);
+      finalReal = valor * Math.pow(1 + taxaReal / 100, periodo);
+      perdaValor = finalNominal - finalReal;
+    }
+
+    return { taxaReal, perdaInflacionaria, finalNominal, finalReal, perdaValor, valor };
+  }
+
+  function renderResultados(result: ReturnType<typeof calcular>, nominal: number, inflacao: number) {
+    const principal = document.getElementById('resultado-principal')!;
+    const detalhes = document.getElementById('resultado-detalhes')!;
+    const montantes = document.getElementById('resultado-montantes')!;
+
+    const taxaRealEl = document.getElementById('valor-taxa-real')!;
+    taxaRealEl.textContent = formatPct(result.taxaReal);
+    taxaRealEl.style.color = result.taxaReal >= 0 ? 'var(--success)' : 'var(--danger)';
+
+    document.getElementById('res-nominal')!.textContent = formatPct(nominal);
+    document.getElementById('res-inflacao')!.textContent = formatPct(inflacao);
+
+    const resReal = document.getElementById('res-real')!;
+    resReal.textContent = formatPct(result.taxaReal);
+    resReal.style.color = result.taxaReal >= 0 ? 'var(--success)' : 'var(--danger)';
+
+    document.getElementById('res-perda')!.textContent = formatPct(result.perdaInflacionaria);
+
+    principal.style.display = '';
+    detalhes.style.display = '';
+
+    if (result.valor !== null && result.finalNominal !== null && result.finalReal !== null && result.perdaValor !== null) {
+      document.getElementById('res-valor-investido')!.textContent = formatBRL(result.valor);
+      document.getElementById('res-final-nominal')!.textContent = formatBRL(result.finalNominal);
+      document.getElementById('res-final-real')!.textContent = formatBRL(result.finalReal);
+      document.getElementById('res-perda-valor')!.textContent = '- ' + formatBRL(result.perdaValor);
+      montantes.style.display = '';
+    } else {
+      montantes.style.display = 'none';
+    }
+  }
+
+  document.getElementById('form-rentabilidade')!.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const params = validate();
+    if (!params) return;
+    const result = calcular(params.nominal, params.inflacao, params.valor, params.periodo);
+    renderResultados(result, params.nominal, params.inflacao);
+  });
+</script>
+
+<style>
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .intro {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0 0 0.5rem;
+  }
+
+  .calc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 2rem 0;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+  }
+
+  .opcional {
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .form-group input {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .erro {
+    font-size: 0.75rem;
+    color: var(--danger);
+    min-height: 1rem;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .subtitulo-resultado {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .tabela-resumo {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+
+  .tabela-resumo td {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+  }
+
+  .tabela-resumo .label {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .tabela-resumo .tabela-valor {
+    text-align: right;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .tabela-resumo .tabela-valor.perda {
+    color: var(--danger);
+  }
+
+  .como-calculamos {
+    margin: 3rem 0 2rem;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .como-calculamos h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .como-calculamos p,
+  .como-calculamos li {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .como-calculamos ul {
+    padding-left: 1.25rem;
+    margin: 0.75rem 0;
+    list-style: disc;
+  }
+
+  .como-calculamos li { margin-bottom: 0.375rem; }
+
+  .formula {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    color: var(--accent);
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .como-calculamos code {
+    background: var(--accent-soft);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--accent);
+  }
+
+  .disclaimer {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .disclaimer p {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .relacionadas { margin: 3rem 0 1rem; }
+
+  .relacionadas h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.01em;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+</style>

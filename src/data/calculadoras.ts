@@ -24,7 +24,7 @@ export const calculadoras: Calculadora[] = [
     descricao: 'Descubra seu salário líquido após descontos de INSS e IRRF.',
     categoria: 'trabalhista',
     icone: 'wallet',
-    ativa: false,
+    ativa: true,
   },
   {
     nome: 'Simulador de Financiamento',
@@ -32,7 +32,7 @@ export const calculadoras: Calculadora[] = [
     descricao: 'Simule parcelas e custo total de financiamentos imobiliários e veiculares.',
     categoria: 'credito',
     icone: 'home',
-    ativa: false,
+    ativa: true,
   },
   {
     nome: 'IRRF',
@@ -40,7 +40,7 @@ export const calculadoras: Calculadora[] = [
     descricao: 'Calcule o Imposto de Renda Retido na Fonte sobre seu salário.',
     categoria: 'impostos',
     icone: 'file-text',
-    ativa: false,
+    ativa: true,
   },
   {
     nome: 'Correção pela Inflação',
@@ -48,7 +48,7 @@ export const calculadoras: Calculadora[] = [
     descricao: 'Corrija valores monetários pela inflação usando índices oficiais.',
     categoria: 'investimentos',
     icone: 'bar-chart',
-    ativa: false,
+    ativa: true,
   },
   {
     nome: 'Rentabilidade Real',
@@ -56,6 +56,6 @@ export const calculadoras: Calculadora[] = [
     descricao: 'Calcule a rentabilidade real de seus investimentos descontando a inflação.',
     categoria: 'investimentos',
     icone: 'percent',
-    ativa: false,
+    ativa: true,
   },
 ];

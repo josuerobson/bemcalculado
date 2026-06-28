@@ -1,0 +1,619 @@
+---
+import CalculadoraLayout from '../../layouts/CalculadoraLayout.astro';
+import AutorBox from '../../components/AutorBox.astro';
+import ResultadoBox from '../../components/ResultadoBox.astro';
+import CalcCard from '../../components/CalcCard.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Calculadora de IRRF",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "BRL"
+  }
+};
+---
+
+<CalculadoraLayout
+  title="Calculadora de IRRF 2025 — Imposto de Renda Retido na Fonte | Bem Calculado"
+  description="Calcule o IRRF sobre seu salário com a tabela atualizada de 2025. Veja a alíquota efetiva, base de cálculo e detalhamento completo. Grátis e sem cadastro."
+  canonical="https://bemcalculado.com.br/calculadoras/irrf/"
+  atualizacao="2026-06-28"
+  breadcrumbItems={[
+    { label: 'Início', href: '/' },
+    { label: 'Calculadoras', href: '/' },
+    { label: 'IRRF' }
+  ]}
+  jsonLd={jsonLd}
+>
+  <h1>Calculadora de IRRF 2025</h1>
+
+  <p class="intro">
+    O Imposto de Renda Retido na Fonte (IRRF) é descontado diretamente do salário do trabalhador
+    com carteira assinada. Com esta calculadora, você descobre o valor exato do imposto retido,
+    a alíquota efetiva aplicada e a base de cálculo utilizada, de acordo com a tabela vigente de 2025.
+  </p>
+
+  <AutorBox
+    autor="Josué R M de Souza"
+    atualizacao="28 de junho de 2026"
+    fontes={[{ nome: 'Receita Federal', url: 'https://www.gov.br/receitafederal' }]}
+  />
+
+  <form id="form-irrf" class="calc-form" novalidate>
+    <div class="form-group">
+      <label for="rendimento-bruto">Rendimento bruto mensal (R$)</label>
+      <span class="hint">Salário bruto antes de qualquer desconto.</span>
+      <input type="text" id="rendimento-bruto" inputmode="decimal" placeholder="5.000,00" aria-describedby="erro-rendimento-bruto" />
+      <span class="erro" id="erro-rendimento-bruto" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="desconto-inss">Desconto INSS (R$)</label>
+      <span class="hint">Valor do INSS já descontado do salário.</span>
+      <input type="text" id="desconto-inss" inputmode="decimal" placeholder="500,00" aria-describedby="erro-desconto-inss" />
+      <span class="erro" id="erro-desconto-inss" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="dependentes">Número de dependentes</label>
+      <span class="hint">Cada dependente deduz R$ 189,59 da base de cálculo.</span>
+      <input type="number" id="dependentes" min="0" value="0" aria-describedby="erro-dependentes" />
+      <span class="erro" id="erro-dependentes" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="outras-deducoes">Outras deduções (R$)</label>
+      <span class="hint">Pensão alimentícia judicial, previdência privada, etc.</span>
+      <input type="text" id="outras-deducoes" inputmode="decimal" placeholder="0,00" value="0" aria-describedby="erro-outras-deducoes" />
+      <span class="erro" id="erro-outras-deducoes" role="alert"></span>
+    </div>
+
+    <button type="submit" class="btn-primary">Calcular IRRF</button>
+  </form>
+
+  <ResultadoBox>
+    <div id="resultado-principal" style="display:none;">
+      <p class="label">IRRF a Reter</p>
+      <p class="valor" id="valor-irrf"></p>
+    </div>
+
+    <div id="resultado-detalhes" style="display:none;">
+      <table class="tabela-resumo">
+        <tbody>
+          <tr>
+            <td class="label">Rendimento Bruto</td>
+            <td class="tabela-valor" id="val-bruto"></td>
+          </tr>
+          <tr>
+            <td class="label">Desconto INSS</td>
+            <td class="tabela-valor" id="val-inss"></td>
+          </tr>
+          <tr>
+            <td class="label">Dedução por Dependentes</td>
+            <td class="tabela-valor" id="val-dependentes"></td>
+          </tr>
+          <tr>
+            <td class="label">Outras Deduções</td>
+            <td class="tabela-valor" id="val-outras"></td>
+          </tr>
+          <tr>
+            <td class="label">Base de Cálculo</td>
+            <td class="tabela-valor" id="val-base"></td>
+          </tr>
+          <tr>
+            <td class="label">Faixa Aplicada</td>
+            <td class="tabela-valor" id="val-faixa"></td>
+          </tr>
+          <tr>
+            <td class="label">Alíquota Efetiva</td>
+            <td class="tabela-valor" id="val-aliquota-efetiva"></td>
+          </tr>
+          <tr>
+            <td class="label"><strong>IRRF</strong></td>
+            <td class="tabela-valor" id="val-irrf-detalhe"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ResultadoBox>
+
+  <div class="acoes" style="display:none;" id="acoes-resultado">
+    <button type="button" class="btn-secondary" id="btn-compartilhar">Compartilhar resultado</button>
+    <button type="button" class="btn-secondary" id="btn-imprimir">Imprimir</button>
+  </div>
+
+  <section class="como-calculamos">
+    <h2>Como calculamos</h2>
+    <p>O IRRF é calculado sobre a <strong>base de cálculo</strong>, obtida da seguinte forma:</p>
+    <p class="formula">
+      Base = Rendimento Bruto &minus; INSS &minus; (Dependentes &times; R$ 189,59) &minus; Outras Deduções
+    </p>
+    <p>Com a base de cálculo, aplicamos a <strong>tabela progressiva do IRRF 2025</strong>:</p>
+
+    <div class="tabela-scroll">
+      <table class="tabela-irrf">
+        <thead>
+          <tr>
+            <th>Base de Cálculo (R$)</th>
+            <th>Alíquota</th>
+            <th>Dedução (R$)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Até 2.259,20</td>
+            <td>Isento</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td>2.259,21 a 2.826,65</td>
+            <td>7,5%</td>
+            <td>169,44</td>
+          </tr>
+          <tr>
+            <td>2.826,66 a 3.751,05</td>
+            <td>15%</td>
+            <td>381,44</td>
+          </tr>
+          <tr>
+            <td>3.751,06 a 4.664,68</td>
+            <td>22,5%</td>
+            <td>662,77</td>
+          </tr>
+          <tr>
+            <td>Acima de 4.664,68</td>
+            <td>27,5%</td>
+            <td>896,00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:1rem;">O imposto é calculado como:</p>
+    <p class="formula">
+      IRRF = Base &times; Alíquota &minus; Dedução da Faixa
+    </p>
+    <p>Se o resultado for negativo, o IRRF é zero (isento).</p>
+    <p>A <strong>alíquota efetiva</strong> representa o percentual real de imposto sobre o rendimento bruto:</p>
+    <p class="formula">
+      Alíquota Efetiva = (IRRF / Rendimento Bruto) &times; 100
+    </p>
+  </section>
+
+  <aside class="disclaimer">
+    <p>Esta calculadora tem fins educativos e informativos. Os valores são aproximados e podem não refletir situações específicas. Para informações oficiais, consulte a Receita Federal. Não constitui aconselhamento tributário ou financeiro.</p>
+  </aside>
+
+  <section class="relacionadas">
+    <h2>Calculadoras Relacionadas</h2>
+    <div class="cards-grid">
+      <CalcCard
+        nome="Salário Líquido"
+        slug="salario-liquido"
+        descricao="Descubra quanto você recebe de fato após todos os descontos do salário."
+        icone="💰"
+        ativa={true}
+      />
+      <CalcCard
+        nome="Juros Compostos"
+        slug="juros-compostos"
+        descricao="Calcule o rendimento dos seus investimentos com juros sobre juros."
+        icone="📈"
+        ativa={true}
+      />
+    </div>
+  </section>
+</CalculadoraLayout>
+
+<script>
+  function parseBRL(value: string): number {
+    const cleaned = value.replace(/\./g, '').replace(',', '.').replace(/[^\d.\-]/g, '');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? NaN : num;
+  }
+
+  function formatBRL(value: number): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.erro').forEach((el) => (el.textContent = ''));
+  }
+
+  function showError(id: string, msg: string) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = msg;
+  }
+
+  interface IRRFParams {
+    rendimentoBruto: number;
+    descontoINSS: number;
+    dependentes: number;
+    outrasDeducoes: number;
+  }
+
+  function validate(): IRRFParams | null {
+    clearErrors();
+    let valid = true;
+
+    const rb = parseBRL((document.getElementById('rendimento-bruto') as HTMLInputElement).value);
+    if (isNaN(rb) || rb <= 0) {
+      showError('erro-rendimento-bruto', 'Informe um rendimento bruto válido.');
+      valid = false;
+    }
+
+    const inss = parseBRL((document.getElementById('desconto-inss') as HTMLInputElement).value);
+    if (isNaN(inss) || inss < 0) {
+      showError('erro-desconto-inss', 'Informe o desconto do INSS.');
+      valid = false;
+    }
+
+    const dep = parseInt((document.getElementById('dependentes') as HTMLInputElement).value, 10);
+    if (isNaN(dep) || dep < 0) {
+      showError('erro-dependentes', 'Informe um número válido de dependentes.');
+      valid = false;
+    }
+
+    const outras = parseBRL((document.getElementById('outras-deducoes') as HTMLInputElement).value);
+    if (isNaN(outras) || outras < 0) {
+      showError('erro-outras-deducoes', 'Informe um valor válido.');
+      valid = false;
+    }
+
+    if (!valid) return null;
+    return { rendimentoBruto: rb, descontoINSS: inss, dependentes: dep, outrasDeducoes: outras };
+  }
+
+  const DEDUCAO_DEPENDENTE = 189.59;
+
+  const TABELA_IRRF = [
+    { limite: 2259.20, aliquota: 0,    deducao: 0,      faixa: 'Isento (até R$ 2.259,20)' },
+    { limite: 2826.65, aliquota: 0.075, deducao: 169.44, faixa: '7,5% (R$ 2.259,21 a R$ 2.826,65)' },
+    { limite: 3751.05, aliquota: 0.15,  deducao: 381.44, faixa: '15% (R$ 2.826,66 a R$ 3.751,05)' },
+    { limite: 4664.68, aliquota: 0.225, deducao: 662.77, faixa: '22,5% (R$ 3.751,06 a R$ 4.664,68)' },
+    { limite: Infinity, aliquota: 0.275, deducao: 896.00, faixa: '27,5% (acima de R$ 4.664,68)' },
+  ];
+
+  function calcularIRRF(params: IRRFParams) {
+    const deducaoDep = params.dependentes * DEDUCAO_DEPENDENTE;
+    const baseCalculo = Math.max(0, params.rendimentoBruto - params.descontoINSS - deducaoDep - params.outrasDeducoes);
+
+    let aliquota = 0;
+    let deducao = 0;
+    let faixa = TABELA_IRRF[0].faixa;
+
+    for (const f of TABELA_IRRF) {
+      if (baseCalculo <= f.limite) {
+        aliquota = f.aliquota;
+        deducao = f.deducao;
+        faixa = f.faixa;
+        break;
+      }
+    }
+
+    const irrf = Math.max(0, baseCalculo * aliquota - deducao);
+    const aliquotaEfetiva = params.rendimentoBruto > 0 ? (irrf / params.rendimentoBruto) * 100 : 0;
+
+    return {
+      irrf: Math.round(irrf * 100) / 100,
+      aliquotaEfetiva: Math.round(aliquotaEfetiva * 100) / 100,
+      baseCalculo: Math.round(baseCalculo * 100) / 100,
+      faixa,
+      deducaoDep: Math.round(deducaoDep * 100) / 100,
+    };
+  }
+
+  function renderResultados(params: IRRFParams, result: ReturnType<typeof calcularIRRF>) {
+    const principal = document.getElementById('resultado-principal')!;
+    const detalhes = document.getElementById('resultado-detalhes')!;
+    const acoes = document.getElementById('acoes-resultado')!;
+
+    document.getElementById('valor-irrf')!.textContent = formatBRL(result.irrf);
+    document.getElementById('val-bruto')!.textContent = formatBRL(params.rendimentoBruto);
+    document.getElementById('val-inss')!.textContent = `- ${formatBRL(params.descontoINSS)}`;
+    document.getElementById('val-dependentes')!.textContent = `- ${formatBRL(result.deducaoDep)}`;
+    document.getElementById('val-outras')!.textContent = `- ${formatBRL(params.outrasDeducoes)}`;
+    document.getElementById('val-base')!.textContent = formatBRL(result.baseCalculo);
+    document.getElementById('val-faixa')!.textContent = result.faixa;
+    document.getElementById('val-aliquota-efetiva')!.textContent = `${result.aliquotaEfetiva.toFixed(2).replace('.', ',')}%`;
+    document.getElementById('val-irrf-detalhe')!.textContent = formatBRL(result.irrf);
+
+    principal.style.display = '';
+    detalhes.style.display = '';
+    acoes.style.display = '';
+  }
+
+  // Form submit
+  document.getElementById('form-irrf')!.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const params = validate();
+    if (!params) return;
+    const result = calcularIRRF(params);
+    renderResultados(params, result);
+  });
+
+  // Share button
+  document.getElementById('btn-compartilhar')!.addEventListener('click', () => {
+    const url = new URL(window.location.href.split('?')[0]);
+    url.searchParams.set('rb', (document.getElementById('rendimento-bruto') as HTMLInputElement).value);
+    url.searchParams.set('inss', (document.getElementById('desconto-inss') as HTMLInputElement).value);
+    url.searchParams.set('dep', (document.getElementById('dependentes') as HTMLInputElement).value);
+    url.searchParams.set('od', (document.getElementById('outras-deducoes') as HTMLInputElement).value);
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      const btn = document.getElementById('btn-compartilhar')!;
+      btn.textContent = 'Link copiado!';
+      setTimeout(() => (btn.textContent = 'Compartilhar resultado'), 2000);
+    });
+  });
+
+  // Print button
+  document.getElementById('btn-imprimir')!.addEventListener('click', () => {
+    window.print();
+  });
+
+  // Permalink support
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const rb = params.get('rb');
+    const inss = params.get('inss');
+    const dep = params.get('dep');
+    const od = params.get('od');
+
+    if (rb && inss) {
+      (document.getElementById('rendimento-bruto') as HTMLInputElement).value = rb;
+      (document.getElementById('desconto-inss') as HTMLInputElement).value = inss;
+      if (dep) (document.getElementById('dependentes') as HTMLInputElement).value = dep;
+      if (od) (document.getElementById('outras-deducoes') as HTMLInputElement).value = od;
+
+      const validated = validate();
+      if (validated) {
+        const result = calcularIRRF(validated);
+        renderResultados(validated, result);
+      }
+    }
+  });
+</script>
+
+<style>
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .intro {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0 0 0.5rem;
+  }
+
+  .calc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 2rem 0;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+  }
+
+  .hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .form-group input {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .erro {
+    font-size: 0.75rem;
+    color: var(--danger);
+    min-height: 1rem;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .tabela-resumo {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+  }
+
+  .tabela-resumo td {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+  }
+
+  .tabela-resumo .label {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .tabela-resumo .tabela-valor {
+    text-align: right;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .acoes {
+    display: flex;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent-border);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .como-calculamos {
+    margin: 3rem 0 2rem;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .como-calculamos h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .como-calculamos p,
+  .como-calculamos li {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .formula {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    color: var(--accent);
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .tabela-scroll {
+    overflow-x: auto;
+    margin-top: 0.75rem;
+  }
+
+  .tabela-irrf {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin: 1rem 0;
+  }
+
+  .tabela-irrf th {
+    text-align: left;
+    padding: 0.625rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .tabela-irrf td {
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .tabela-irrf tr:hover td {
+    background: var(--accent-soft);
+  }
+
+  .disclaimer {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .disclaimer p {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .relacionadas { margin: 3rem 0 1rem; }
+
+  .relacionadas h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.01em;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+</style>

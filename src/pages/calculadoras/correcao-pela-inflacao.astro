@@ -1,0 +1,538 @@
+---
+import CalculadoraLayout from '../../layouts/CalculadoraLayout.astro';
+import AutorBox from '../../components/AutorBox.astro';
+import ResultadoBox from '../../components/ResultadoBox.astro';
+import CalcCard from '../../components/CalcCard.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Calculadora de Correção pela Inflação",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "BRL"
+  }
+};
+---
+
+<CalculadoraLayout
+  title="Calculadora de Correção pela Inflação — Bem Calculado"
+  description="Calcule a correção de valores pela inflação. Descubra quanto um valor antigo representa hoje considerando o IPCA acumulado. Grátis e sem cadastro."
+  canonical="https://bemcalculado.com.br/calculadoras/correcao-pela-inflacao/"
+  atualizacao="2026-06-28"
+  breadcrumbItems={[
+    { label: 'Início', href: '/' },
+    { label: 'Calculadoras', href: '/' },
+    { label: 'Correção pela Inflação' }
+  ]}
+  jsonLd={jsonLd}
+>
+  <h1>Calculadora de Correção pela Inflação</h1>
+
+  <p class="intro">
+    A inflação corrói o poder de compra do dinheiro ao longo do tempo.
+    Com esta calculadora, você descobre quanto um valor do passado representa hoje,
+    aplicando a taxa de inflação acumulada ou calculando a partir da inflação anual e do período.
+  </p>
+
+  <AutorBox
+    autor="Josué R M de Souza"
+    atualizacao="28 de junho de 2026"
+    fontes={[
+      { nome: 'IBGE', url: 'https://www.ibge.gov.br/' },
+      { nome: 'Banco Central do Brasil', url: 'https://www.bcb.gov.br/' }
+    ]}
+  />
+
+  <form id="form-inflacao" class="calc-form" novalidate>
+    <div class="form-group">
+      <label for="valor-original">Valor original (R$)</label>
+      <span class="hint">O valor que deseja corrigir pela inflação.</span>
+      <input type="text" id="valor-original" inputmode="decimal" placeholder="1.000,00" aria-describedby="erro-valor-original" />
+      <span class="erro" id="erro-valor-original" role="alert"></span>
+    </div>
+
+    <fieldset class="modo-toggle">
+      <legend>Modo de cálculo</legend>
+      <div class="toggle-pills">
+        <label class="pill active">
+          <input type="radio" name="modo" value="acumulada" checked />
+          <span>Inflação acumulada</span>
+        </label>
+        <label class="pill">
+          <input type="radio" name="modo" value="anual" />
+          <span>Inflação anual + período</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <div id="grupo-acumulada">
+      <div class="form-group">
+        <label for="inflacao-acumulada">Taxa de inflação acumulada (%)</label>
+        <span class="hint">Inflação total acumulada no período desejado. Consulte o IPCA no site do IBGE/SIDRA.</span>
+        <input type="text" id="inflacao-acumulada" inputmode="decimal" placeholder="45,68" aria-describedby="erro-inflacao-acumulada" />
+        <span class="erro" id="erro-inflacao-acumulada" role="alert"></span>
+      </div>
+    </div>
+
+    <div id="grupo-anual" style="display:none;">
+      <div class="form-group">
+        <label for="inflacao-anual">Inflação anual (%)</label>
+        <span class="hint">Taxa média de inflação por ano (ex: 5 para 5% a.a.).</span>
+        <input type="text" id="inflacao-anual" inputmode="decimal" placeholder="5,00" aria-describedby="erro-inflacao-anual" />
+        <span class="erro" id="erro-inflacao-anual" role="alert"></span>
+      </div>
+      <div class="form-group">
+        <label for="periodo-anos">Período (anos)</label>
+        <span class="hint">Quantidade de anos para aplicar a inflação.</span>
+        <input type="number" id="periodo-anos" min="1" placeholder="10" aria-describedby="erro-periodo-anos" />
+        <span class="erro" id="erro-periodo-anos" role="alert"></span>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-primary">Calcular</button>
+  </form>
+
+  <ResultadoBox>
+    <div id="resultado-principal" style="display:none;">
+      <p class="label">Valor Corrigido</p>
+      <p class="valor" id="valor-corrigido"></p>
+    </div>
+
+    <div id="resultado-detalhes" style="display:none;">
+      <table class="tabela-resumo">
+        <tbody>
+          <tr>
+            <td class="label">Valor Original</td>
+            <td class="tabela-valor" id="valor-original-res"></td>
+          </tr>
+          <tr>
+            <td class="label">Diferença (perda de poder de compra)</td>
+            <td class="tabela-valor" id="valor-diferenca"></td>
+          </tr>
+          <tr>
+            <td class="label">Percentual de Correção</td>
+            <td class="tabela-valor" id="percentual-correcao"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ResultadoBox>
+
+  <section class="como-calculamos">
+    <h2>Como calculamos</h2>
+    <p>A correção pela inflação utiliza a seguinte fórmula:</p>
+
+    <p><strong>Com inflação acumulada:</strong></p>
+    <p class="formula">
+      Valor Corrigido = Valor Original &times; (1 + Inflação Acumulada / 100)
+    </p>
+
+    <p><strong>Com inflação anual e período:</strong></p>
+    <p class="formula">
+      Valor Corrigido = Valor Original &times; (1 + Inflação Anual / 100)<sup>anos</sup>
+    </p>
+
+    <p>Onde:</p>
+    <ul>
+      <li><strong>Valor Original</strong> = Quantia que se deseja corrigir</li>
+      <li><strong>Inflação Acumulada</strong> = Percentual total de inflação no período</li>
+      <li><strong>Inflação Anual</strong> = Taxa média de inflação por ano</li>
+      <li><strong>anos</strong> = Número de anos do período</li>
+    </ul>
+
+    <p>
+      Para obter dados oficiais de inflação (IPCA), consulte o
+      <a href="https://sidra.ibge.gov.br/tabela/1737" target="_blank" rel="noopener">Sistema IBGE de Recuperação Automática (SIDRA)</a>
+      ou a
+      <a href="https://www.bcb.gov.br/controleinflacao/historicometas" target="_blank" rel="noopener">Calculadora do Cidadão do Banco Central</a>.
+    </p>
+  </section>
+
+  <aside class="disclaimer">
+    <p>Esta calculadora tem fins educativos e informativos. Os resultados são aproximações baseadas nas taxas informadas e não substituem consultas a fontes oficiais como o IBGE ou o Banco Central. Não constitui aconselhamento financeiro.</p>
+  </aside>
+
+  <section class="relacionadas">
+    <h2>Calculadoras Relacionadas</h2>
+    <div class="cards-grid">
+      <CalcCard
+        nome="Rentabilidade Real"
+        slug="rentabilidade-real"
+        descricao="Calcule o rendimento real do seu investimento descontando a inflação."
+        icone="📉"
+        ativa={true}
+      />
+      <CalcCard
+        nome="Juros Compostos"
+        slug="juros-compostos"
+        descricao="Calcule juros compostos com aportes mensais e veja a evolução do investimento."
+        icone="📊"
+        ativa={true}
+      />
+    </div>
+  </section>
+</CalculadoraLayout>
+
+<script>
+  function parseBRL(value: string): number {
+    const cleaned = value.replace(/\./g, '').replace(',', '.').replace(/[^\d.\-]/g, '');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? NaN : num;
+  }
+
+  function formatBRL(value: number): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.erro').forEach((el) => (el.textContent = ''));
+  }
+
+  function showError(id: string, msg: string) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = msg;
+  }
+
+  function getModo(): string {
+    const checked = document.querySelector('input[name="modo"]:checked') as HTMLInputElement;
+    return checked ? checked.value : 'acumulada';
+  }
+
+  function validate(): { valor: number; inflacaoAcumulada: number } | null {
+    clearErrors();
+    let valid = true;
+
+    const valor = parseBRL((document.getElementById('valor-original') as HTMLInputElement).value);
+    if (isNaN(valor) || valor <= 0) {
+      showError('erro-valor-original', 'Informe um valor original válido.');
+      valid = false;
+    }
+
+    let inflacaoAcumulada = 0;
+    const modo = getModo();
+
+    if (modo === 'acumulada') {
+      inflacaoAcumulada = parseBRL((document.getElementById('inflacao-acumulada') as HTMLInputElement).value);
+      if (isNaN(inflacaoAcumulada) || inflacaoAcumulada <= 0) {
+        showError('erro-inflacao-acumulada', 'Informe uma taxa de inflação acumulada válida.');
+        valid = false;
+      }
+    } else {
+      const inflAnual = parseBRL((document.getElementById('inflacao-anual') as HTMLInputElement).value);
+      if (isNaN(inflAnual) || inflAnual <= 0) {
+        showError('erro-inflacao-anual', 'Informe uma taxa de inflação anual válida.');
+        valid = false;
+      }
+
+      const anos = parseInt((document.getElementById('periodo-anos') as HTMLInputElement).value, 10);
+      if (isNaN(anos) || anos < 1) {
+        showError('erro-periodo-anos', 'Informe um período de pelo menos 1 ano.');
+        valid = false;
+      }
+
+      if (valid) {
+        inflacaoAcumulada = (Math.pow(1 + inflAnual / 100, anos) - 1) * 100;
+      }
+    }
+
+    if (!valid) return null;
+    return { valor, inflacaoAcumulada };
+  }
+
+  function calcular(valor: number, inflacaoAcumulada: number) {
+    const valorCorrigido = valor * (1 + inflacaoAcumulada / 100);
+    const diferenca = valorCorrigido - valor;
+    return {
+      valorCorrigido: Math.round(valorCorrigido * 100) / 100,
+      diferenca: Math.round(diferenca * 100) / 100,
+      percentual: Math.round(inflacaoAcumulada * 100) / 100,
+    };
+  }
+
+  function renderResultados(result: ReturnType<typeof calcular>, valorOriginal: number) {
+    const principal = document.getElementById('resultado-principal')!;
+    const detalhes = document.getElementById('resultado-detalhes')!;
+
+    document.getElementById('valor-corrigido')!.textContent = formatBRL(result.valorCorrigido);
+    document.getElementById('valor-original-res')!.textContent = formatBRL(valorOriginal);
+    document.getElementById('valor-diferenca')!.textContent = formatBRL(result.diferenca);
+    document.getElementById('percentual-correcao')!.textContent = result.percentual.toFixed(2).replace('.', ',') + '%';
+
+    principal.style.display = '';
+    detalhes.style.display = '';
+  }
+
+  // Toggle mode
+  document.querySelectorAll('input[name="modo"]').forEach((radio) => {
+    radio.addEventListener('change', () => {
+      const modo = getModo();
+      document.getElementById('grupo-acumulada')!.style.display = modo === 'acumulada' ? '' : 'none';
+      document.getElementById('grupo-anual')!.style.display = modo === 'anual' ? '' : 'none';
+
+      document.querySelectorAll('.pill').forEach((pill) => pill.classList.remove('active'));
+      const checked = document.querySelector('input[name="modo"]:checked') as HTMLInputElement;
+      checked.closest('.pill')?.classList.add('active');
+    });
+  });
+
+  // Form submit
+  document.getElementById('form-inflacao')!.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const params = validate();
+    if (!params) return;
+    const result = calcular(params.valor, params.inflacaoAcumulada);
+    renderResultados(result, params.valor);
+  });
+</script>
+
+<style>
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .intro {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0 0 0.5rem;
+  }
+
+  .calc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 2rem 0;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+  }
+
+  .hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .form-group input {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .erro {
+    font-size: 0.75rem;
+    color: var(--danger);
+    min-height: 1rem;
+  }
+
+  .modo-toggle {
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .modo-toggle legend {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .toggle-pills {
+    display: flex;
+    gap: 0;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .pill {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1rem;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: background 0.2s, color 0.2s;
+    text-align: center;
+  }
+
+  .pill input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .pill.active {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .pill:not(.active):hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .tabela-resumo {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+  }
+
+  .tabela-resumo td {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+  }
+
+  .tabela-resumo .label {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .tabela-resumo .tabela-valor {
+    text-align: right;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .como-calculamos {
+    margin: 3rem 0 2rem;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .como-calculamos h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .como-calculamos p,
+  .como-calculamos li {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .como-calculamos ul {
+    padding-left: 1.25rem;
+    margin: 0.75rem 0;
+    list-style: disc;
+  }
+
+  .como-calculamos li { margin-bottom: 0.375rem; }
+
+  .como-calculamos a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  .formula {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    color: var(--accent);
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .disclaimer {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .disclaimer p {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .relacionadas { margin: 3rem 0 1rem; }
+
+  .relacionadas h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.01em;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+</style>
