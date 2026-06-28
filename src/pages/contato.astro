@@ -7,69 +7,54 @@ const canonical = 'https://bemcalculado.com.br/contato/';
 ---
 
 <BaseLayout title={title} description={description} canonical={canonical}>
-  <article class="page-contato">
+  <article class="page-content">
     <h1>Contato</h1>
 
     <p class="intro">
-      Tem alguma dúvida, sugestão ou encontrou algum erro em nossas calculadoras?
-      Ficaremos felizes em ouvir você. Utilize o formulário abaixo ou envie um e-mail
-      diretamente para nossa equipe.
+      Tem alguma dúvida, sugestão ou encontrou algum erro? Ficaremos felizes em ouvir você.
     </p>
 
     <div class="contato-grid">
       <section class="form-section">
         <h2>Envie sua Mensagem</h2>
-        <!-- TODO: Integrar backend para envio do formulário -->
-        <p class="form-aviso">
-          <em>Este formulário ainda não está funcional. A integração com o backend está pendente.
-          Por enquanto, envie sua mensagem diretamente pelo e-mail abaixo.</em>
-        </p>
+        <div class="form-aviso">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>Formulário em breve. Por enquanto, envie pelo e-mail abaixo.</span>
+        </div>
         <form class="contact-form" onsubmit="event.preventDefault();">
           <div class="form-group">
             <label for="nome">Nome</label>
             <input type="text" id="nome" name="nome" required placeholder="Seu nome completo" autocomplete="name" />
           </div>
-
           <div class="form-group">
             <label for="email">E-mail</label>
             <input type="email" id="email" name="email" required placeholder="seu@email.com" autocomplete="email" />
           </div>
-
           <div class="form-group">
             <label for="mensagem">Mensagem</label>
-            <textarea id="mensagem" name="mensagem" rows="6" required placeholder="Escreva sua dúvida, sugestão ou correção..."></textarea>
+            <textarea id="mensagem" name="mensagem" rows="5" required placeholder="Escreva sua mensagem..."></textarea>
           </div>
-
           <button type="submit" disabled>Enviar Mensagem</button>
         </form>
       </section>
 
       <section class="info-section">
         <h2>Outras Formas de Contato</h2>
-
         <div class="info-item">
           <h3>E-mail</h3>
-          <p>
-            <a href="mailto:contato@bemcalculado.com.br">contato@bemcalculado.com.br</a>
-          </p>
+          <p><a href="mailto:contato@bemcalculado.com.br">contato@bemcalculado.com.br</a></p>
         </div>
-
         <div class="info-item">
           <h3>Prazo de Resposta</h3>
-          <p>
-            Respondemos todas as mensagens em até <strong>5 dias úteis</strong>. Para
-            solicitações relacionadas à LGPD e proteção de dados, o prazo é de até 15 dias
-            úteis, conforme previsto em lei.
-          </p>
+          <p>Respondemos em até <strong>5 dias úteis</strong>. Solicitações LGPD: até 15 dias úteis.</p>
         </div>
-
         <div class="info-item">
           <h3>O que Podemos Ajudar</h3>
           <ul>
-            <li>Dúvidas sobre o funcionamento das calculadoras</li>
-            <li>Sugestões de novas calculadoras ou funcionalidades</li>
-            <li>Relato de erros ou inconsistências nos cálculos</li>
-            <li>Solicitações relacionadas à proteção de dados (LGPD)</li>
+            <li>Dúvidas sobre calculadoras</li>
+            <li>Sugestões de novas ferramentas</li>
+            <li>Relato de erros nos cálculos</li>
+            <li>Solicitações LGPD</li>
             <li>Parcerias e colaborações</li>
           </ul>
         </div>
@@ -79,153 +64,93 @@ const canonical = 'https://bemcalculado.com.br/contato/';
 </BaseLayout>
 
 <style>
-  .page-contato {
+  .page-content {
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: 2rem 1rem;
-    font-family: var(--font-body);
-    color: var(--text-primary);
+    padding: 2.5rem 1.5rem;
   }
 
-  h1 {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-  }
-
-  .intro {
-    font-size: 1.125rem;
-    line-height: 1.7;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-  }
+  h1 { font-size: 2rem; margin-bottom: 1rem; letter-spacing: -0.02em; }
+  .intro { font-size: 1.1rem; line-height: 1.7; color: var(--text-secondary); margin-bottom: 2rem; }
 
   .contato-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
-  @media (max-width: 768px) {
-    .contato-grid {
-      grid-template-columns: 1fr;
-    }
-  }
+  @media (max-width: 768px) { .contato-grid { grid-template-columns: 1fr; } }
 
   section {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
     padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
   }
 
-  h2 {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    margin-top: 0;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-  }
-
-  h3 {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-  }
-
-  p {
-    line-height: 1.7;
-    margin-bottom: 1rem;
-    color: var(--text-secondary);
-  }
+  h2 { font-size: 1.15rem; margin: 0 0 1rem; letter-spacing: -0.01em; }
+  h3 { font-size: 0.9375rem; margin-bottom: 0.35rem; }
+  p { line-height: 1.7; margin-bottom: 0.75rem; color: var(--text-secondary); }
 
   .form-aviso {
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
     border-radius: var(--radius);
     padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-  }
-
-  .form-group {
+    font-size: 0.8125rem;
+    color: var(--accent);
     margin-bottom: 1.25rem;
   }
+
+  .form-group { margin-bottom: 1rem; }
 
   label {
     display: block;
     font-weight: 600;
     margin-bottom: 0.375rem;
-    color: var(--text-primary);
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
   }
 
-  input,
-  textarea {
+  input, textarea {
     width: 100%;
     padding: 0.625rem 0.75rem;
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius);
     background: var(--bg);
     color: var(--text-primary);
-    font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: 0.9375rem;
     box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
 
-  input:focus,
-  textarea:focus {
-    outline: 2px solid var(--accent);
-    outline-offset: 1px;
+  input:focus, textarea:focus {
+    outline: none;
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
   }
 
-  textarea {
-    resize: vertical;
-  }
+  textarea { resize: vertical; }
 
   button[type="submit"] {
-    display: inline-block;
     padding: 0.75rem 1.5rem;
     background: var(--accent);
-    color: var(--bg);
+    color: #fff;
     border: none;
     border-radius: var(--radius);
-    font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.5;
   }
 
-  .info-item {
-    margin-bottom: 1.5rem;
-  }
+  .info-item { margin-bottom: 1.25rem; }
+  .info-item:last-child { margin-bottom: 0; }
 
-  .info-item:last-child {
-    margin-bottom: 0;
-  }
-
-  ul {
-    padding-left: 1.5rem;
-    margin-bottom: 0;
-  }
-
-  li {
-    line-height: 1.7;
-    margin-bottom: 0.375rem;
-    color: var(--text-secondary);
-  }
-
-  a {
-    color: var(--accent);
-    text-decoration: underline;
-  }
-
-  a:hover {
-    text-decoration: none;
-  }
+  ul { padding-left: 1.5rem; margin-bottom: 0; list-style: disc; }
+  li { line-height: 1.7; margin-bottom: 0.3rem; color: var(--text-secondary); }
+  a { color: var(--accent); }
 </style>

@@ -1,11 +1,18 @@
 ---
+import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
 
 <header class="header">
   <div class="header__container">
-    <a href="/" class="header__logo">Bem Calculado</a>
+    <a href="/" class="header__logo">
+      <svg class="header__logo-icon" width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="var(--accent)"/>
+        <path d="M9 22V10h4.5c1.2 0 2.1.3 2.8.9.6.6 1 1.4 1 2.3 0 .7-.2 1.2-.5 1.7-.4.4-.8.7-1.4.9.7.1 1.2.5 1.6 1 .4.5.7 1.1.7 1.9 0 1-.4 1.8-1.1 2.4-.7.6-1.7.9-2.9.9H9zm2.5-7h2c.6 0 1-.1 1.3-.4.3-.3.5-.7.5-1.1 0-.5-.2-.9-.5-1.1-.3-.3-.7-.4-1.3-.4h-2v3zm0 5h2.2c.6 0 1.1-.2 1.4-.5.3-.3.5-.7.5-1.2s-.2-.9-.5-1.2c-.3-.3-.8-.5-1.4-.5h-2.2v3.4zM20 22V10h2.5v12H20z" fill="#fff"/>
+      </svg>
+      <span>Bem Calculado</span>
+    </a>
 
     <input type="checkbox" id="menu-toggle" class="header__toggle" aria-label="Abrir menu" />
     <label for="menu-toggle" class="header__hamburger" aria-hidden="true">
@@ -19,7 +26,14 @@
       <a href="/sobre">Sobre</a>
       <a href="/metodologia">Metodologia</a>
       <a href="/contato">Contato</a>
+      <div class="header__nav-toggle">
+        <ThemeToggle />
+      </div>
     </nav>
+
+    <div class="header__actions">
+      <ThemeToggle />
+    </div>
   </div>
 </header>
 
@@ -29,21 +43,20 @@
     top: -100%;
     left: 0;
     background: var(--accent);
-    color: var(--bg);
+    color: #fff;
     padding: 0.5rem 1rem;
     z-index: 1100;
-    font-family: var(--font-body);
     font-size: 0.875rem;
     text-decoration: none;
     border-radius: var(--radius);
   }
 
-  .skip-link:focus {
-    top: 0;
-  }
+  .skip-link:focus { top: 0; }
 
   .header {
-    background: var(--surface);
+    background: var(--header-bg);
+    backdrop-filter: var(--header-blur);
+    -webkit-backdrop-filter: var(--header-blur);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
@@ -57,20 +70,24 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 4rem;
+    height: 3.75rem;
   }
 
   .header__logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.25rem;
-    color: var(--accent);
+    font-size: 1.125rem;
+    color: var(--text-primary);
     text-decoration: none;
+    letter-spacing: -0.02em;
   }
 
-  .header__toggle {
-    display: none;
-  }
+  .header__logo:hover { color: var(--text-primary); }
+
+  .header__toggle { display: none; }
 
   .header__hamburger {
     display: none;
@@ -93,30 +110,48 @@
 
   .header__nav {
     display: flex;
-    gap: 2rem;
+    gap: 0.25rem;
     align-items: center;
   }
 
   .header__nav a {
-    font-family: var(--font-body);
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
     color: var(--text-secondary);
     text-decoration: none;
-    transition: color 0.2s;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius);
+    transition: color 0.2s, background 0.2s;
   }
 
   .header__nav a:hover {
     color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .header__nav-toggle {
+    display: none;
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   @media (max-width: 768px) {
-    .header__hamburger {
+    .header__hamburger { display: flex; }
+    .header__actions { display: none; }
+
+    .header__nav-toggle {
       display: flex;
+      padding: 0.75rem 1.5rem;
+      border-top: 1px solid var(--border);
     }
 
     .header__nav {
       position: absolute;
-      top: 4rem;
+      top: 3.75rem;
       left: 0;
       right: 0;
       background: var(--surface);
@@ -127,28 +162,22 @@
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.3s ease;
+      box-shadow: var(--shadow-lg);
     }
 
     .header__nav a {
-      padding: 1rem 1.5rem;
-      border-top: 1px solid var(--border);
+      padding: 0.875rem 1.5rem;
+      border-radius: 0;
       width: 100%;
     }
 
-    .header__toggle:checked ~ .header__nav {
-      max-height: 20rem;
+    .header__nav a:hover {
+      background: var(--accent-soft);
     }
 
-    .header__toggle:checked ~ .header__hamburger span:nth-child(1) {
-      transform: translateY(7px) rotate(45deg);
-    }
-
-    .header__toggle:checked ~ .header__hamburger span:nth-child(2) {
-      opacity: 0;
-    }
-
-    .header__toggle:checked ~ .header__hamburger span:nth-child(3) {
-      transform: translateY(-7px) rotate(-45deg);
-    }
+    .header__toggle:checked ~ .header__nav { max-height: 25rem; }
+    .header__toggle:checked ~ .header__hamburger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .header__toggle:checked ~ .header__hamburger span:nth-child(2) { opacity: 0; }
+    .header__toggle:checked ~ .header__hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
   }
 </style>

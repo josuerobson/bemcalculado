@@ -34,19 +34,36 @@ const categorias = [
   <!-- Hero -->
   <section class="hero">
     <div class="hero__container">
-      <h1 class="hero__title">Calculadoras Financeiras Gratuitas e Confiáveis</h1>
+      <div class="hero__badge">Gratuito e sem cadastro</div>
+      <h1 class="hero__title">
+        Calculadoras financeiras<br/>
+        <span class="hero__highlight">precisas e confiáveis</span>
+      </h1>
       <p class="hero__subtitle">
-        Resultados precisos com fórmulas transparentes e dados de fontes oficiais.
-        Simplifique suas decisões financeiras com ferramentas feitas para você.
+        Resultados transparentes com fórmulas abertas e dados de fontes oficiais.
+        Simplifique suas decisões financeiras.
       </p>
-      <a href="#calculadoras" class="hero__cta">Explorar Calculadoras</a>
+      <div class="hero__actions">
+        <a href="#calculadoras" class="hero__cta">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+          Explorar Calculadoras
+        </a>
+        <a href="/metodologia" class="hero__cta-secondary">
+          Como calculamos
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
     </div>
+    <div class="hero__glow" aria-hidden="true"></div>
   </section>
 
   <!-- Calculadoras -->
   <section id="calculadoras" class="section">
     <div class="container">
-      <h2 class="section__title">Nossas Calculadoras</h2>
+      <div class="section__header">
+        <h2 class="section__title">Nossas Calculadoras</h2>
+        <p class="section__desc">Escolha a ferramenta ideal para sua necessidade financeira</p>
+      </div>
 
       <div class="filtros" role="tablist" aria-label="Filtrar por categoria">
         {categorias.map((cat) => (
@@ -80,22 +97,34 @@ const categorias = [
   <!-- Como funciona -->
   <section class="section section--alt">
     <div class="container">
-      <h2 class="section__title">Como Funciona</h2>
+      <div class="section__header">
+        <h2 class="section__title">Como Funciona</h2>
+        <p class="section__desc">Três passos simples para resultados precisos</p>
+      </div>
       <div class="passos">
         <div class="passo">
-          <div class="passo__icone">1</div>
+          <div class="passo__icone">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <div class="passo__num">1</div>
           <h3 class="passo__titulo">Escolha a calculadora</h3>
-          <p class="passo__desc">Navegue pelas categorias e encontre a ferramenta ideal para sua necessidade.</p>
+          <p class="passo__desc">Navegue pelas categorias e encontre a ferramenta ideal.</p>
         </div>
         <div class="passo">
-          <div class="passo__icone">2</div>
+          <div class="passo__icone">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <div class="passo__num">2</div>
           <h3 class="passo__titulo">Preencha os dados</h3>
-          <p class="passo__desc">Insira os valores solicitados nos campos intuitivos e bem explicados.</p>
+          <p class="passo__desc">Insira os valores nos campos intuitivos e bem explicados.</p>
         </div>
         <div class="passo">
-          <div class="passo__icone">3</div>
-          <h3 class="passo__titulo">Veja o resultado detalhado</h3>
-          <p class="passo__desc">Receba cálculos precisos com explicações claras e fontes das fórmulas utilizadas.</p>
+          <div class="passo__icone">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="passo__num">3</div>
+          <h3 class="passo__titulo">Veja o resultado</h3>
+          <p class="passo__desc">Receba cálculos precisos com explicações e fontes das fórmulas.</p>
         </div>
       </div>
     </div>
@@ -104,25 +133,35 @@ const categorias = [
   <!-- Por que usar -->
   <section class="section">
     <div class="container">
-      <h2 class="section__title">Por que usar o Bem Calculado?</h2>
+      <div class="section__header">
+        <h2 class="section__title">Por que usar o Bem Calculado?</h2>
+      </div>
       <div class="beneficios">
         <div class="beneficio">
-          <div class="beneficio__icone">&#128200;</div>
+          <div class="beneficio__icone">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
           <h3 class="beneficio__titulo">Dados atualizados</h3>
-          <p class="beneficio__desc">Tabelas e alíquotas sempre sincronizadas com fontes oficiais do governo.</p>
+          <p class="beneficio__desc">Tabelas e alíquotas sempre sincronizadas com fontes oficiais.</p>
         </div>
         <div class="beneficio">
-          <div class="beneficio__icone">&#128269;</div>
+          <div class="beneficio__icone">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </div>
           <h3 class="beneficio__titulo">Transparência total</h3>
-          <p class="beneficio__desc">Todas as fórmulas são abertas e documentadas. Confira cada etapa do cálculo.</p>
+          <p class="beneficio__desc">Todas as fórmulas são abertas e documentadas.</p>
         </div>
         <div class="beneficio">
-          <div class="beneficio__icone">&#10004;&#65039;</div>
+          <div class="beneficio__icone">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
           <h3 class="beneficio__titulo">Gratuito para sempre</h3>
-          <p class="beneficio__desc">Sem assinaturas, sem anúncios invasivos. Ferramentas de qualidade para todos.</p>
+          <p class="beneficio__desc">Sem assinaturas, sem cadastro. Ferramentas de qualidade para todos.</p>
         </div>
         <div class="beneficio">
-          <div class="beneficio__icone">&#128274;</div>
+          <div class="beneficio__icone">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
           <h3 class="beneficio__titulo">Privacidade garantida</h3>
           <p class="beneficio__desc">Seus dados não são armazenados. Conformidade total com a LGPD.</p>
         </div>
@@ -164,62 +203,127 @@ const categorias = [
   /* Hero */
   .hero {
     position: relative;
-    padding: 5rem 1.5rem 4rem;
+    padding: 5rem 1.5rem 4.5rem;
     text-align: center;
-    background:
-      radial-gradient(ellipse at 20% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 100%, rgba(16, 185, 129, 0.1) 0%, transparent 60%),
-      var(--bg);
-    border-bottom: 1px solid var(--border);
+    overflow: hidden;
   }
 
   .hero__container {
     max-width: var(--max-width);
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.35rem 1rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--accent-border);
+    margin-bottom: 1.5rem;
   }
 
   .hero__title {
-    font-family: var(--font-display);
-    font-size: clamp(1.75rem, 5vw, 2.75rem);
+    font-size: clamp(2rem, 5.5vw, 3.25rem);
     font-weight: 800;
     color: var(--text-primary);
-    line-height: 1.2;
+    line-height: 1.15;
     margin: 0 0 1.25rem;
+    letter-spacing: -0.03em;
+  }
+
+  .hero__highlight {
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .hero__subtitle {
-    font-family: var(--font-body);
-    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
     color: var(--text-secondary);
-    max-width: 640px;
+    max-width: 560px;
     margin: 0 auto 2rem;
-    line-height: 1.6;
+    line-height: 1.7;
+  }
+
+  .hero__actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   .hero__cta {
-    display: inline-block;
-    padding: 0.75rem 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.75rem;
     background: var(--accent);
     color: #fff;
-    font-family: var(--font-body);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9375rem;
     border-radius: var(--radius);
     text-decoration: none;
-    transition: opacity 0.2s;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: var(--shadow-md);
   }
 
   .hero__cta:hover {
-    opacity: 0.9;
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+    color: #fff;
+  }
+
+  .hero__cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.8rem 1.75rem;
+    background: var(--surface);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+
+  .hero__cta-secondary:hover {
+    border-color: var(--accent-border);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .hero__glow {
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 600px;
+    background: radial-gradient(ellipse, var(--accent-soft) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
   }
 
   /* Sections */
   .section {
-    padding: 4rem 1.5rem;
+    padding: 4.5rem 1.5rem;
   }
 
   .section--alt {
     background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
   }
 
   .container {
@@ -227,39 +331,50 @@ const categorias = [
     margin: 0 auto;
   }
 
+  .section__header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
   .section__title {
-    font-family: var(--font-display);
-    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
     font-weight: 700;
     color: var(--text-primary);
-    text-align: center;
-    margin: 0 0 2rem;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section__desc {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0;
   }
 
   /* Filtros */
   .filtros {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.375rem;
     justify-content: center;
     margin-bottom: 2rem;
   }
 
   .filtro {
-    padding: 0.5rem 1.25rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+    padding: 0.45rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-full);
+    background: transparent;
     color: var(--text-secondary);
-    font-family: var(--font-body);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
   }
 
   .filtro:hover {
-    border-color: var(--accent);
-    color: var(--text-primary);
+    border-color: var(--accent-border);
+    color: var(--accent);
+    background: var(--accent-soft);
   }
 
   .filtro--ativo {
@@ -268,47 +383,72 @@ const categorias = [
     border-color: var(--accent);
   }
 
+  .filtro--ativo:hover {
+    background: var(--accent-hover);
+    color: #fff;
+    border-color: var(--accent-hover);
+  }
+
   /* Grid */
   .grid-calculadoras {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
   }
 
   /* Passos */
   .passos {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 2rem;
+    gap: 1.5rem;
     text-align: center;
   }
 
+  .passo {
+    position: relative;
+    padding: 2rem 1.5rem;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+
   .passo__icone {
-    width: 3rem;
-    height: 3rem;
+    width: 3.25rem;
+    height: 3.25rem;
     margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .passo__num {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 1.5rem;
+    height: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     background: var(--accent);
     color: #fff;
-    font-family: var(--font-display);
+    font-size: 0.75rem;
     font-weight: 700;
-    font-size: 1.25rem;
   }
 
   .passo__titulo {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.4rem;
   }
 
   .passo__desc {
-    font-family: var(--font-body);
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     color: var(--text-muted);
     line-height: 1.5;
     margin: 0;
@@ -318,45 +458,53 @@ const categorias = [
   .beneficios {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
   .beneficio {
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 1.5rem;
-    text-align: center;
+    text-align: left;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .beneficio:hover {
+    border-color: var(--accent-border);
+    box-shadow: var(--shadow-md);
   }
 
   .beneficio__icone {
-    font-size: 2rem;
-    margin-bottom: 0.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    background: var(--accent-soft);
+    color: var(--accent);
+    margin-bottom: 1rem;
   }
 
   .beneficio__titulo {
-    font-family: var(--font-display);
-    font-size: 1.05rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.35rem;
   }
 
   .beneficio__desc {
-    font-family: var(--font-body);
-    font-size: 0.9rem;
+    font-size: 0.8125rem;
     color: var(--text-muted);
     line-height: 1.5;
     margin: 0;
   }
 
   @media (max-width: 480px) {
-    .hero {
-      padding: 3rem 1rem 2.5rem;
-    }
-
-    .section {
-      padding: 3rem 1rem;
-    }
+    .hero { padding: 3rem 1rem 2.5rem; }
+    .section { padding: 3rem 1rem; }
+    .grid-calculadoras { grid-template-columns: 1fr; }
   }
 </style>

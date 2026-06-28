@@ -7,166 +7,90 @@ const canonical = 'https://bemcalculado.com.br/metodologia/';
 ---
 
 <BaseLayout title={title} description={description} canonical={canonical}>
-  <article class="page-metodologia">
+  <article class="page-content">
     <h1>Metodologia</h1>
 
     <p class="intro">
       A transparência é um dos pilares do Bem Calculado. Nesta página, explicamos de onde vêm
-      nossos dados, como realizamos os cálculos e qual é o processo de atualização das informações
-      financeiras utilizadas em nossas calculadoras.
+      nossos dados e como realizamos os cálculos.
     </p>
 
     <section>
       <h2>Fontes de Dados</h2>
-      <p>Utilizamos exclusivamente fontes oficiais e reconhecidas para garantir a precisão dos cálculos:</p>
+      <p>Utilizamos exclusivamente fontes oficiais:</p>
       <ul>
-        <li>
-          <strong>Receita Federal do Brasil</strong> — tabelas de IRRF, alíquotas e faixas de tributação.
-          <br><a href="https://www.gov.br/receitafederal/" target="_blank" rel="noopener noreferrer">gov.br/receitafederal</a>
-        </li>
-        <li>
-          <strong>INSS (Instituto Nacional do Seguro Social)</strong> — alíquotas de contribuição previdenciária e teto do INSS.
-          <br><a href="https://www.gov.br/inss/" target="_blank" rel="noopener noreferrer">gov.br/inss</a>
-        </li>
-        <li>
-          <strong>Banco Central do Brasil</strong> — taxa Selic, CDI, IPCA e demais índices econômicos.
-          <br><a href="https://www.bcb.gov.br/" target="_blank" rel="noopener noreferrer">bcb.gov.br</a>
-        </li>
-        <li>
-          <strong>IBGE (Instituto Brasileiro de Geografia e Estatística)</strong> — índices de inflação (IPCA, INPC).
-          <br><a href="https://www.ibge.gov.br/" target="_blank" rel="noopener noreferrer">ibge.gov.br</a>
-        </li>
+        <li><strong>Receita Federal</strong> — tabelas de IRRF, alíquotas e faixas. <a href="https://www.gov.br/receitafederal/" target="_blank" rel="noopener noreferrer">gov.br/receitafederal</a></li>
+        <li><strong>INSS</strong> — alíquotas de contribuição e teto. <a href="https://www.gov.br/inss/" target="_blank" rel="noopener noreferrer">gov.br/inss</a></li>
+        <li><strong>Banco Central</strong> — Selic, CDI, IPCA. <a href="https://www.bcb.gov.br/" target="_blank" rel="noopener noreferrer">bcb.gov.br</a></li>
+        <li><strong>IBGE</strong> — IPCA, INPC. <a href="https://www.ibge.gov.br/" target="_blank" rel="noopener noreferrer">ibge.gov.br</a></li>
       </ul>
     </section>
 
     <section>
       <h2>Processo de Atualização</h2>
-      <p>
-        As tabelas e alíquotas utilizadas nas calculadoras são atualizadas sempre que os órgãos
-        governamentais publicam novos valores. O processo segue estas etapas:
-      </p>
       <ol>
-        <li>Monitoramento das publicações oficiais no Diário Oficial da União e nos sites dos órgãos competentes.</li>
-        <li>Verificação e validação dos novos valores com base nas fontes primárias.</li>
-        <li>Atualização das tabelas no sistema e testes de consistência dos cálculos.</li>
-        <li>Publicação das alterações com registro da data de atualização em cada calculadora.</li>
+        <li>Monitoramento das publicações oficiais no Diário Oficial.</li>
+        <li>Verificação e validação com fontes primárias.</li>
+        <li>Atualização das tabelas e testes de consistência.</li>
+        <li>Publicação com registro de data de atualização.</li>
       </ol>
     </section>
 
     <section>
       <h2>Fórmulas Utilizadas</h2>
-      <p>
-        Cada calculadora utiliza fórmulas matemáticas e financeiras reconhecidas. Por exemplo,
-        para cálculos de juros compostos utilizamos:
-      </p>
-      <div class="formula">
-        <code>M = P × (1 + i)<sup>n</sup></code>
-      </div>
-      <p>Onde:</p>
+      <p>Exemplo — juros compostos:</p>
+      <div class="formula"><code>M = P × (1 + i)<sup>n</sup></code></div>
       <ul>
         <li><strong>M</strong> = montante final</li>
         <li><strong>P</strong> = principal (valor inicial)</li>
         <li><strong>i</strong> = taxa de juros por período</li>
         <li><strong>n</strong> = número de períodos</li>
       </ul>
-      <p>
-        As fórmulas específicas de cada calculadora são detalhadas nas respectivas páginas.
-      </p>
+      <p>As fórmulas específicas são detalhadas nas respectivas páginas.</p>
     </section>
 
     <section>
       <h2>Transparência</h2>
-      <p>
-        Todas as fórmulas utilizadas são apresentadas de forma visível em cada página de calculadora.
-        Acreditamos que o usuário tem o direito de entender como o resultado foi obtido e poder
-        verificar os cálculos de forma independente.
-      </p>
+      <p>Todas as fórmulas são apresentadas de forma visível em cada calculadora, permitindo verificação independente.</p>
     </section>
 
     <section>
       <h2>Limitações</h2>
-      <p>
-        Os cálculos apresentados no Bem Calculado têm <strong>caráter educativo e informativo</strong>.
-        Não substituem a orientação de um profissional qualificado (contador, planejador financeiro
-        ou advogado tributarista).
-      </p>
-      <p>
-        Embora nos esforcemos para manter os dados sempre atualizados e precisos, podem ocorrer
-        atrasos na atualização ou situações específicas não contempladas pelos cálculos genéricos.
-        Recomendamos sempre consultar um profissional para decisões financeiras importantes.
-      </p>
+      <p>Os cálculos têm <strong>caráter educativo e informativo</strong>. Não substituem orientação profissional qualificada.</p>
     </section>
   </article>
 </BaseLayout>
 
 <style>
-  .page-metodologia {
+  .page-content {
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: 2rem 1rem;
-    font-family: var(--font-body);
-    color: var(--text-primary);
+    padding: 2.5rem 1.5rem;
   }
 
-  h1 {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-  }
-
-  .intro {
-    font-size: 1.125rem;
-    line-height: 1.7;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-  }
-
-  h2 {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    margin-top: 0;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-  }
-
-  p {
-    line-height: 1.7;
-    margin-bottom: 1rem;
-    color: var(--text-secondary);
-  }
-
-  ul, ol {
-    padding-left: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  li {
-    line-height: 1.7;
-    margin-bottom: 0.5rem;
-    color: var(--text-secondary);
-  }
-
-  a {
-    color: var(--accent);
-    text-decoration: underline;
-  }
-
-  a:hover {
-    text-decoration: none;
-  }
+  h1 { font-size: 2rem; margin-bottom: 1rem; letter-spacing: -0.02em; }
+  .intro { font-size: 1.1rem; line-height: 1.7; color: var(--text-secondary); margin-bottom: 2rem; }
 
   section {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
     padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
   }
 
+  h2 { font-size: 1.25rem; margin: 0 0 0.75rem; letter-spacing: -0.01em; }
+  p { line-height: 1.7; margin-bottom: 0.75rem; color: var(--text-secondary); }
+  ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; list-style: disc; }
+  ol { list-style: decimal; }
+  li { line-height: 1.7; margin-bottom: 0.4rem; color: var(--text-secondary); }
+  a { color: var(--accent); text-decoration: underline; }
+  a:hover { text-decoration: none; }
+
   .formula {
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
     border-radius: var(--radius);
     padding: 1rem 1.5rem;
     text-align: center;
@@ -174,6 +98,7 @@ const canonical = 'https://bemcalculado.com.br/metodologia/';
   }
 
   .formula code {
+    font-family: var(--font-mono);
     font-size: 1.25rem;
     color: var(--accent);
   }

@@ -11,76 +11,117 @@ const { nome, slug, descricao, icone, ativa } = Astro.props;
 
 const href = ativa ? `/calculadoras/${slug}` : undefined;
 const Tag = ativa ? 'a' : 'div';
+
+const iconMap: Record<string, string> = {
+  'trending-up': '<path d="M23 6l-9.5 9.5-5-5L1 18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 6 23 6 23 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  'wallet': '<path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="16" r="1" fill="currentColor"/>',
+  'home': '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  'file-text': '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  'bar-chart': '<line x1="12" y1="20" x2="12" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="20" x2="18" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  'percent': '<line x1="19" y1="5" x2="5" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="6.5" cy="6.5" r="2.5" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="17.5" cy="17.5" r="2.5" stroke="currentColor" stroke-width="2" fill="none"/>',
+};
+
+const svgContent = iconMap[icone] || iconMap['trending-up'];
 ---
 
-<Tag class:list={['card', { 'card--active': ativa, 'card--disabled': !ativa }]} {...(href ? { href } : {})}>
-  <div class="card__icon">{icone}</div>
-  <h3 class="card__title">{nome}</h3>
-  <p class="card__desc">{descricao}</p>
-  {!ativa && <span class="card__badge">Em breve</span>}
+<Tag class:list={['calc-card', { 'calc-card--active': ativa, 'calc-card--disabled': !ativa }]} {...(href ? { href } : {})}>
+  <div class="calc-card__icon-wrap">
+    <svg class="calc-card__icon" width="22" height="22" viewBox="0 0 24 24" set:html={svgContent} />
+  </div>
+  <div class="calc-card__content">
+    <h3 class="calc-card__title">{nome}</h3>
+    <p class="calc-card__desc">{descricao}</p>
+  </div>
+  {!ativa && <span class="calc-card__badge">Em breve</span>}
+  {ativa && (
+    <svg class="calc-card__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+    </svg>
+  )}
 </Tag>
 
 <style>
-  .card {
+  .calc-card {
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 1.5rem;
+    padding: 1.25rem;
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    align-items: flex-start;
+    gap: 1rem;
     text-decoration: none;
     color: inherit;
     position: relative;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    box-shadow: var(--shadow-sm);
   }
 
-  .card--active:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    border-color: var(--accent-dim);
+  .calc-card--active:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-border);
   }
 
-  .card--disabled {
-    opacity: 0.6;
+  .calc-card--active:hover .calc-card__arrow {
+    transform: translateX(3px);
+    color: var(--accent);
+  }
+
+  .calc-card--disabled {
+    opacity: 0.55;
     cursor: default;
   }
 
-  .card__icon {
-    font-size: 1.5rem;
+  .calc-card__icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    background: var(--accent-soft);
+    border-radius: var(--radius);
     color: var(--accent);
-    font-family: var(--font-display);
-    font-weight: 700;
+    flex-shrink: 0;
   }
 
-  .card__title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.125rem;
+  .calc-card__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .calc-card__title {
+    font-weight: 600;
+    font-size: 1rem;
     color: var(--text-primary);
-    margin: 0;
+    margin: 0 0 0.25rem;
+    letter-spacing: -0.01em;
   }
 
-  .card__desc {
-    font-family: var(--font-body);
-    font-size: 0.875rem;
-    color: var(--text-secondary);
+  .calc-card__desc {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
     line-height: 1.5;
     margin: 0;
   }
 
-  .card__badge {
+  .calc-card__badge {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: var(--surface-raised);
-    color: var(--text-muted);
-    font-family: var(--font-body);
+    top: 0.75rem;
+    right: 0.75rem;
+    background: var(--accent-soft);
+    color: var(--accent);
     font-size: 0.6875rem;
     font-weight: 600;
-    padding: 0.2rem 0.6rem;
-    border-radius: var(--radius);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-full);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
+  }
+
+  .calc-card__arrow {
+    color: var(--text-muted);
+    flex-shrink: 0;
+    align-self: center;
+    transition: transform 0.2s, color 0.2s;
   }
 </style>

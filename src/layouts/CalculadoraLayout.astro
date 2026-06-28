@@ -24,14 +24,14 @@ const { title, description, canonical, ogImage, breadcrumbItems, jsonLd } = Astr
   ogImage={ogImage}
   jsonLd={jsonLd}
 >
-  <div class="container">
+  <div class="calc-container">
     <Breadcrumb items={breadcrumbItems} />
     <slot />
   </div>
 </BaseLayout>
 
 <style>
-  .container {
+  .calc-container {
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 2rem 1.5rem;
