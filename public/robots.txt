@@ -1,3 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /404
+
 Sitemap: https://bemcalculado.com.br/sitemap-index.xml
+
+# Bem Calculado - Calculadoras Financeiras Gratuitas
+# https://bemcalculado.com.br

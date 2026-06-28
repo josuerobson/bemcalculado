@@ -4,18 +4,42 @@ import AutorBox from '../../components/AutorBox.astro';
 import ResultadoBox from '../../components/ResultadoBox.astro';
 import CalcCard from '../../components/CalcCard.astro';
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Calculadora de IRRF",
-  "applicationCategory": "FinanceApplication",
-  "operatingSystem": "All",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "BRL"
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Calculadora de IRRF",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "BRL"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Como é calculado o IRRF?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "O IRRF é calculado sobre a base de cálculo (rendimento bruto menos INSS, dedução por dependentes de R$ 189,59 cada, e outras deduções). Aplica-se a alíquota da faixa correspondente e subtrai-se a parcela a deduzir."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Qual a tabela do IRRF 2025?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "As faixas são: isento até R$ 2.259,20; 7,5% de R$ 2.259,21 a R$ 2.826,65; 15% de R$ 2.826,66 a R$ 3.751,05; 22,5% de R$ 3.751,06 a R$ 4.664,68; e 27,5% acima de R$ 4.664,69."
+        }
+      }
+    ]
   }
-};
+];
 ---
 
 <CalculadoraLayout

@@ -4,18 +4,42 @@ import AutorBox from '../../components/AutorBox.astro';
 import ResultadoBox from '../../components/ResultadoBox.astro';
 import CalcCard from '../../components/CalcCard.astro';
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Calculadora de Correção pela Inflação",
-  "applicationCategory": "FinanceApplication",
-  "operatingSystem": "All",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "BRL"
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Calculadora de Correção pela Inflação",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "BRL"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Como corrigir um valor pela inflação?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Para corrigir um valor pela inflação acumulada, multiplique o valor original por (1 + taxa/100). Para inflação anual ao longo de vários anos, use a fórmula: valor × (1 + taxa_anual/100)^anos."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Onde encontrar o IPCA acumulado oficial?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "O IPCA oficial é divulgado pelo IBGE no Sistema SIDRA (sidra.ibge.gov.br) e também pode ser consultado na Calculadora do Cidadão do Banco Central (bcb.gov.br)."
+        }
+      }
+    ]
   }
-};
+];
 ---
 
 <CalculadoraLayout

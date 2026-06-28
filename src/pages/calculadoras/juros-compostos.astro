@@ -4,18 +4,42 @@ import AutorBox from '../../components/AutorBox.astro';
 import ResultadoBox from '../../components/ResultadoBox.astro';
 import CalcCard from '../../components/CalcCard.astro';
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Calculadora de Juros Compostos",
-  "applicationCategory": "FinanceApplication",
-  "operatingSystem": "All",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "BRL"
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Calculadora de Juros Compostos",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "BRL"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Como funciona o cálculo de juros compostos?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Os juros compostos são calculados pela fórmula M = P×(1+i)^n + PMT × [(1+i)^n − 1] / i, onde M é o montante final, P o capital inicial, i a taxa mensal, n o número de meses e PMT o aporte mensal."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Qual a diferença entre juros simples e compostos?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nos juros simples, os rendimentos são calculados apenas sobre o valor inicial. Nos juros compostos, os rendimentos são calculados sobre o valor acumulado (juros sobre juros), gerando crescimento exponencial."
+        }
+      }
+    ]
   }
-};
+];
 ---
 
 <CalculadoraLayout

@@ -4,18 +4,42 @@ import AutorBox from '../../components/AutorBox.astro';
 import ResultadoBox from '../../components/ResultadoBox.astro';
 import CalcCard from '../../components/CalcCard.astro';
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Simulador de Financiamento",
-  "applicationCategory": "FinanceApplication",
-  "operatingSystem": "All",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "BRL"
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Simulador de Financiamento",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "BRL"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Qual a diferença entre SAC e Tabela Price?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No SAC (Sistema de Amortização Constante), a amortização é fixa e as parcelas são decrescentes. Na Tabela Price, as parcelas são fixas, com amortização crescente e juros decrescentes ao longo do tempo."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Como calcular a parcela de um financiamento?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Na Tabela Price, a parcela é calculada por PMT = PV × [i×(1+i)^n] / [(1+i)^n − 1]. No SAC, a amortização é PV/n e os juros são calculados sobre o saldo devedor restante."
+        }
+      }
+    ]
   }
-};
+];
 ---
 
 <CalculadoraLayout

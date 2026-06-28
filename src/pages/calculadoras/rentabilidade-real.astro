@@ -4,18 +4,42 @@ import AutorBox from '../../components/AutorBox.astro';
 import ResultadoBox from '../../components/ResultadoBox.astro';
 import CalcCard from '../../components/CalcCard.astro';
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Calculadora de Rentabilidade Real",
-  "applicationCategory": "FinanceApplication",
-  "operatingSystem": "All",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "BRL"
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Calculadora de Rentabilidade Real",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "BRL"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "O que é rentabilidade real?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A rentabilidade real é o retorno de um investimento após descontar a inflação do período. É calculada pela equação de Fisher: Taxa Real = ((1 + nominal) / (1 + inflação) − 1) × 100."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Qual a diferença entre rentabilidade nominal e real?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A rentabilidade nominal é o retorno bruto do investimento. A rentabilidade real desconta a inflação, mostrando o ganho efetivo de poder de compra. Um investimento com 10% nominal e 5% de inflação tem aproximadamente 4,76% de rentabilidade real."
+        }
+      }
+    ]
   }
-};
+];
 ---
 
 <CalculadoraLayout
