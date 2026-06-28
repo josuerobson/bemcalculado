@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CalcCard from '../../components/CalcCard.astro';
+import { calculadoras } from '../../data/calculadoras';
+
+const title = 'Todas as Calculadoras Financeiras Gratuitas — Bem Calculado';
+const description = 'Lista completa de calculadoras financeiras gratuitas: juros compostos, salário líquido, IRRF, financiamento, inflação e rentabilidade real. Resultados precisos com fontes oficiais.';
+const canonical = 'https://bemcalculado.com.br/calculadoras/';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Calculadoras Financeiras',
+  description,
+  url: canonical,
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: calculadoras.map((calc, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: calc.nome,
+      url: `https://bemcalculado.com.br/calculadoras/${calc.slug}/`,
+    })),
+  },
+};
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} jsonLd={jsonLd}>
+  <section class="page-calcs">
+    <h1>Calculadoras Financeiras Gratuitas</h1>
+    <p class="intro">
+      Ferramentas financeiras online, gratuitas e sem cadastro. Todas utilizam fórmulas reconhecidas
+      e dados de fontes oficiais como Receita Federal, INSS, Banco Central e IBGE.
+    </p>
+
+    <div class="grid">
+      {calculadoras.map((calc) => (
+        <CalcCard
+          nome={calc.nome}
+          slug={calc.slug}
+          descricao={calc.descricao}
+          icone={calc.icone}
+          ativa={calc.ativa}
+        />
+      ))}
+    </div>
+
+    <section class="content-seo">
+      <h2>O que são calculadoras financeiras?</h2>
+      <p>
+        Calculadoras financeiras são ferramentas que ajudam a simular cenários de investimento,
+        financiamento, tributação e planejamento financeiro pessoal. No Bem Calculado, todas as
+        calculadoras funcionam diretamente no seu navegador — nenhum dado é enviado a servidores.
+      </p>
+
+      <h2>Como escolher a calculadora certa?</h2>
+      <ul>
+        <li><strong>Quer saber quanto seu dinheiro vai render?</strong> Use a <a href="/calculadoras/juros-compostos/">calculadora de juros compostos</a>.</li>
+        <li><strong>Precisa saber seu salário após descontos?</strong> Use a <a href="/calculadoras/salario-liquido/">calculadora de salário líquido</a>.</li>
+        <li><strong>Vai financiar um imóvel ou veículo?</strong> Use o <a href="/calculadoras/simulador-de-financiamento/">simulador de financiamento</a>.</li>
+        <li><strong>Quer calcular o imposto de renda?</strong> Use a <a href="/calculadoras/irrf/">calculadora de IRRF</a>.</li>
+        <li><strong>Quer saber quanto a inflação corroeu?</strong> Use a <a href="/calculadoras/correcao-pela-inflacao/">correção pela inflação</a>.</li>
+        <li><strong>Quer saber o ganho real do investimento?</strong> Use a <a href="/calculadoras/rentabilidade-real/">calculadora de rentabilidade real</a>.</li>
+      </ul>
+
+      <h2>Fontes de dados utilizadas</h2>
+      <p>
+        Todas as tabelas, alíquotas e índices são obtidos de fontes oficiais do governo brasileiro:
+        <a href="https://www.gov.br/receitafederal/" target="_blank" rel="noopener noreferrer">Receita Federal</a>,
+        <a href="https://www.gov.br/inss/" target="_blank" rel="noopener noreferrer">INSS</a>,
+        <a href="https://www.bcb.gov.br/" target="_blank" rel="noopener noreferrer">Banco Central</a> e
+        <a href="https://www.ibge.gov.br/" target="_blank" rel="noopener noreferrer">IBGE</a>.
+        Saiba mais na nossa <a href="/metodologia">página de metodologia</a>.
+      </p>
+    </section>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-calcs {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .intro {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .content-seo {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .content-seo h2 {
+    font-size: 1.25rem;
+    margin: 1.5rem 0 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .content-seo h2:first-child { margin-top: 0; }
+
+  .content-seo p {
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+
+  .content-seo ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+    list-style: disc;
+  }
+
+  .content-seo li {
+    line-height: 1.7;
+    margin-bottom: 0.4rem;
+    color: var(--text-secondary);
+  }
+
+  .content-seo a { color: var(--accent); }
+
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
