@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const title = 'Blog — Artigos sobre Finanças Pessoais | Bem Calculado';
+const description = 'Artigos sobre juros compostos, INSS, IRRF, financiamento, inflação e planejamento financeiro. Guias práticos com cálculos e exemplos reais.';
+const canonical = 'https://bemcalculado.com.br/blog/';
+---
+
+<BaseLayout title={title} description={description} canonical={canonical}>
+  <section class="blog-list">
+    <h1>Blog</h1>
+    <p class="intro">Artigos sobre finanças pessoais, investimentos e tributação com exemplos práticos.</p>
+
+    <div class="posts">
+      {posts.map((post) => (
+        <a href={`/blog/${post.id}/`} class="post-card">
+          <div class="post-card__meta">
+            <span class="post-card__category">{post.data.category}</span>
+            <time datetime={post.data.date}>
+              {new Date(post.data.date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </time>
+          </div>
+          <h2 class="post-card__title">{post.data.title}</h2>
+          <p class="post-card__desc">{post.data.description}</p>
+          <span class="post-card__link">
+            Ler artigo
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .blog-list {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+  }
+
+  h1 { font-size: 2rem; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+
+  .intro {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
+  }
+
+  .posts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+  }
+
+  .post-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-border);
+  }
+
+  .post-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .post-card__category {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .post-card__title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .post-card__desc {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+  }
+
+  .post-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 0.25rem;
+  }
+
+  @media (max-width: 480px) {
+    .posts { grid-template-columns: 1fr; }
+  }
+</style>
