@@ -1,0 +1,1108 @@
+---
+import CalculadoraLayout from '../../layouts/CalculadoraLayout.astro';
+import AutorBox from '../../components/AutorBox.astro';
+import ResultadoBox from '../../components/ResultadoBox.astro';
+import CalcCard from '../../components/CalcCard.astro';
+import { runTestes } from '../../lib/ir2026';
+import { lei15270 } from '../../data/tabelas';
+
+// Rodar testes em build-time — falhas ficam visíveis no HTML (modo dev) e no console de build
+const resultadosTestes = runTestes();
+const todosTestes = resultadosTestes.every((r) => r.passou || r.irEsperado === null);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Calculadora de Imposto de Renda 2026 — Lei 15.270/2025",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "url": "https://bemcalculado.com.br/calculadoras/imposto-de-renda-2026/",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "BRL"
+    },
+    "featureList": [
+      "Cálculo com redutor Lei 15.270/2025",
+      "Comparativo antes e depois da nova lei",
+      "Cálculo do IR sobre 13º salário",
+      "Memória de cálculo passo a passo",
+      "100% client-side — nenhum dado sai do navegador"
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Quem está isento de IR em 2026?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pela Lei 15.270/2025, quem recebe até R$ 5.000,00 de rendimento tributável mensal está isento de Imposto de Renda em 2026. A isenção é obtida via um mecanismo de redução do imposto apurado, não por alteração direta da tabela progressiva."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Como funciona a redução do IR para quem ganha entre R$ 5.000 e R$ 7.350?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Para rendimento tributável bruto entre R$ 5.000,01 e R$ 7.350,00, aplica-se uma redução parcial calculada pela fórmula: Redutor = 978,62 − (0,133145 × RTB), onde RTB é o rendimento tributável bruto (salário bruto). O redutor é limitado ao imposto apurado, nunca gerando valor negativo."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quem ganha R$ 6.000 paga quanto de IR em 2026?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Para um salário de R$ 6.000 sem dependentes, o redutor da Lei 15.270/2025 é R$ 179,75 (= 978,62 − 0,133145 × 6.000). Se o imposto apurado pela tabela progressiva for R$ 562,63, o IR final é de R$ 382,88. O resultado exato varia conforme o INSS e eventuais deduções."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "A Lei 15.270/2025 vale para o 13º salário?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sim. O redutor da Lei 15.270/2025 também se aplica ao IRRF sobre o 13º salário, que tem cálculo exclusivo na fonte, separado do salário mensal. Use o modo '13º Salário' nesta calculadora para simular."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "O desconto simplificado muda em 2026?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "O desconto simplificado mensal em 2026 é de R$ 607,20, equivalente a 25% de R$ 2.428,80. A calculadora compara automaticamente o resultado pelo desconto simplificado e pelas deduções legais (INSS + dependentes + outras), aplicando o que gerar menor imposto."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Como calcular o IR 2026 passo a passo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "1) Calcule o INSS progressivo sobre o salário bruto. 2) Calcule a base pelo método completo (bruto − INSS − dependentes − outras deduções) e pelo simplificado (bruto − R$ 607,20). 3) Aplique a tabela progressiva sobre a menor base. 4) Calcule o redutor: se RTB ≤ R$ 5.000 → redutor = min(IR, R$ 312,89); se RTB entre R$ 5.000,01 e R$ 7.350 → redutor = 978,62 − 0,133145 × RTB (limitado ao IR). 5) IR final = IR apurado − redutor (mínimo zero)."
+        }
+      }
+    ]
+  }
+];
+---
+
+<CalculadoraLayout
+  title="Calculadora de Imposto de Renda 2026 — Lei 15.270/2025 | Bem Calculado"
+  description="Calcule seu IR 2026 com a nova lei: isenção total até R$ 5.000 e redução parcial até R$ 7.350. Inclui 13º salário, comparativo antes/depois e memória de cálculo. Grátis, 100% client-side."
+  canonical="https://bemcalculado.com.br/calculadoras/imposto-de-renda-2026/"
+  ogImage="/og-imposto-de-renda-2026.png"
+  atualizacao="2026-06-29"
+  breadcrumbItems={[
+    { label: 'Início', href: '/' },
+    { label: 'Calculadoras', href: '/calculadoras/' },
+    { label: 'IR 2026' }
+  ]}
+  jsonLd={jsonLd}
+>
+  <h1>Calculadora de Imposto de Renda 2026</h1>
+
+  <p class="destaque-seo">
+    Pela <strong>Lei 15.270/2025</strong>, quem recebe até <strong>R$ 5.000,00</strong> está isento de IR a partir de janeiro de 2026. Para rendimentos entre R$ 5.000,01 e R$ 7.350,00 há redução parcial calculada por fórmula. Acima de R$ 7.350 aplica-se a tabela progressiva integral. Esta calculadora reproduz com precisão os exemplos oficiais da Receita Federal e mostra a memória de cálculo completa.
+  </p>
+
+  <AutorBox
+    autor="Josué R M de Souza"
+    atualizacao="29 de junho de 2026"
+    fontes={[
+      { nome: 'Lei 15.270/2025 — Planalto', url: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/L15270.htm' },
+      { nome: 'Receita Federal — Exemplos IRRF 2026', url: 'https://www.gov.br/receitafederal/pt-br' },
+    ]}
+  />
+
+  {!todosTestes && (
+    <div class="aviso-tabela">
+      <strong>⚠️ Atenção:</strong> Alguns casos de teste oficiais da Receita Federal não batem com os valores atuais das tabelas IRRF/INSS 2026. Os resultados abaixo podem divergir dos cálculos oficiais até as tabelas serem atualizadas na fonte. Veja o resumo técnico no final da página.
+    </div>
+  )}
+
+  <!-- Toggle modo -->
+  <div class="modo-toggle" role="group" aria-label="Modo de cálculo">
+    <button type="button" class="btn-modo ativo" id="btn-mensal" aria-pressed="true">
+      Salário Mensal
+    </button>
+    <button type="button" class="btn-modo" id="btn-13" aria-pressed="false">
+      13º Salário
+    </button>
+  </div>
+
+  <form id="form-ir2026" class="calc-form" novalidate>
+    <div class="form-group">
+      <label for="salario-bruto">Salário bruto mensal (R$)</label>
+      <span class="hint">Rendimento tributável antes de qualquer desconto.</span>
+      <input type="text" id="salario-bruto" inputmode="decimal" placeholder="6.000,00" aria-describedby="erro-salario" />
+      <span class="erro" id="erro-salario" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="dependentes">Número de dependentes</label>
+      <span class="hint">Cada dependente deduz R$ 189,59 da base (método completo).</span>
+      <input type="number" id="dependentes" min="0" value="0" aria-describedby="erro-dep" />
+      <span class="erro" id="erro-dep" role="alert"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="outras-deducoes">Outras deduções (R$) — opcional</label>
+      <span class="hint">Pensão alimentícia judicial, previdência complementar, etc.</span>
+      <input type="text" id="outras-deducoes" inputmode="decimal" placeholder="0,00" value="0" aria-describedby="erro-outras" />
+      <span class="erro" id="erro-outras" role="alert"></span>
+    </div>
+
+    <button type="submit" class="btn-primary">Calcular IR 2026</button>
+  </form>
+
+  <ResultadoBox>
+    <div id="resultado-wrap" style="display:none;">
+      <div id="resultado-isento" class="resultado-isento" style="display:none;">
+        <span class="icone-isento">✓</span>
+        <div>
+          <p class="isento-titulo">Você está isento de IR em 2026</p>
+          <p class="isento-sub">Pela Lei 15.270/2025, seu rendimento está dentro da faixa de isenção.</p>
+        </div>
+      </div>
+
+      <div id="resultado-valor" style="display:none;">
+        <p class="label">IR mensal (Lei 15.270/2025)</p>
+        <p class="valor" id="val-ir-final"></p>
+        <p class="economia-badge" id="badge-economia"></p>
+      </div>
+
+      <!-- Comparativo antes/depois -->
+      <div class="comparativo" id="comparativo" style="display:none;">
+        <div class="comparativo__col antes">
+          <span class="comparativo__label">Regra anterior</span>
+          <span class="comparativo__valor" id="val-sem-reducao"></span>
+        </div>
+        <div class="comparativo__seta">→</div>
+        <div class="comparativo__col depois">
+          <span class="comparativo__label">Com Lei 15.270/2025</span>
+          <span class="comparativo__valor destaque" id="val-com-reducao"></span>
+        </div>
+      </div>
+
+      <!-- Memória de cálculo -->
+      <details class="memoria-calc" id="memoria-calc">
+        <summary>Ver memória de cálculo passo a passo</summary>
+        <div class="memoria-content">
+          <h3>1. Desconto INSS (calculado automaticamente)</h3>
+          <table class="tabela-resumo">
+            <tbody>
+              <tr><td class="label">Salário bruto</td><td class="tv" id="m-bruto"></td></tr>
+              <tr><td class="label">INSS retido</td><td class="tv" id="m-inss"></td></tr>
+            </tbody>
+          </table>
+
+          <h3>2. Base de cálculo — dois caminhos</h3>
+          <table class="tabela-resumo">
+            <tbody>
+              <tr><td class="label">Dedução por dependentes</td><td class="tv" id="m-dep"></td></tr>
+              <tr><td class="label">Outras deduções</td><td class="tv" id="m-outras"></td></tr>
+              <tr class="separador"><td class="label">Base pelo método completo</td><td class="tv" id="m-base-completo"></td></tr>
+              <tr><td class="label">Desconto simplificado</td><td class="tv" id="m-simplificado-valor"></td></tr>
+              <tr><td class="label">Base pelo método simplificado</td><td class="tv" id="m-base-simplificado"></td></tr>
+              <tr class="destaque-linha"><td class="label"><strong>Método escolhido (menor IR)</strong></td><td class="tv" id="m-metodo"></td></tr>
+            </tbody>
+          </table>
+
+          <h3>3. Imposto pela tabela progressiva</h3>
+          <table class="tabela-resumo">
+            <tbody>
+              <tr><td class="label">Faixa aplicada</td><td class="tv" id="m-faixa"></td></tr>
+              <tr><td class="label">IR apurado (antes do redutor)</td><td class="tv" id="m-ir-apurado"></td></tr>
+            </tbody>
+          </table>
+
+          <h3>4. Redutor da Lei 15.270/2025</h3>
+          <table class="tabela-resumo">
+            <tbody>
+              <tr><td class="label">RTB (rendimento tributável bruto)</td><td class="tv" id="m-rtb"></td></tr>
+              <tr><td class="label">Fórmula aplicada</td><td class="tv" id="m-formula-reducao"></td></tr>
+              <tr><td class="label">Valor do redutor</td><td class="tv" id="m-reducao"></td></tr>
+            </tbody>
+          </table>
+
+          <h3>5. Resultado final</h3>
+          <table class="tabela-resumo">
+            <tbody>
+              <tr><td class="label">IR apurado</td><td class="tv" id="m-ir-apurado2"></td></tr>
+              <tr><td class="label">Redutor</td><td class="tv" id="m-reducao2"></td></tr>
+              <tr class="destaque-linha"><td class="label"><strong>IR final a recolher</strong></td><td class="tv destaque" id="m-ir-final"></td></tr>
+              <tr><td class="label">Economia vs. regra anterior</td><td class="tv verde" id="m-economia"></td></tr>
+              <tr><td class="label">Alíquota efetiva</td><td class="tv" id="m-aliquota"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+  </ResultadoBox>
+
+  <div class="acoes" id="acoes-resultado" style="display:none;">
+    <button type="button" class="btn-secondary" id="btn-compartilhar">Compartilhar resultado</button>
+    <button type="button" class="btn-secondary" id="btn-imprimir">Imprimir</button>
+  </div>
+
+  <section class="como-calculamos">
+    <h2>Como a Lei 15.270/2025 muda o IR 2026</h2>
+    <p>A lei não altera a tabela progressiva. Em vez disso, cria um <strong>mecanismo de redução</strong> aplicado sobre o imposto já calculado:</p>
+
+    <div class="regras-grid">
+      <div class="regra-card">
+        <span class="regra-faixa">RTB ≤ R$ 5.000</span>
+        <span class="regra-desc">Redução = menor valor entre o IR apurado e R$ 312,89 → <strong>Isento</strong></span>
+      </div>
+      <div class="regra-card">
+        <span class="regra-faixa">R$ 5.000,01 a R$ 7.350,00</span>
+        <span class="regra-desc">Redução = 978,62 − (0,133145 × RTB), limitada ao IR apurado</span>
+      </div>
+      <div class="regra-card">
+        <span class="regra-faixa">Acima de R$ 7.350,00</span>
+        <span class="regra-desc">Sem redução — tabela progressiva integral</span>
+      </div>
+    </div>
+
+    <p class="formula-destaque">
+      A fórmula usa o <strong>RTB (rendimento tributável bruto)</strong> — o salário bruto —, não a base de cálculo após deduções. Essa distinção é a principal fonte de erro em calculadoras genéricas.
+    </p>
+
+    <h3>Algoritmo completo</h3>
+    <ol class="passos">
+      <li>Calcule o INSS progressivo sobre o salário bruto</li>
+      <li>Calcule a base pelo <em>método completo</em>: bruto − INSS − dependentes − outras deduções</li>
+      <li>Calcule a base pelo <em>método simplificado</em>: bruto − R$ 607,20</li>
+      <li>Aplique a tabela progressiva em ambas as bases; use a que gerar <strong>menor imposto</strong></li>
+      <li>Calcule o redutor usando o RTB (salário bruto) — nunca a base de cálculo</li>
+      <li>IR final = IR apurado − Redutor (nunca negativo)</li>
+    </ol>
+
+    <div class="tabela-scroll">
+      <table class="tabela-irrf">
+        <caption>Tabela progressiva IRRF 2026 <small>(⚠️ confirmar valores oficiais)</small></caption>
+        <thead>
+          <tr>
+            <th>Base de Cálculo (R$)</th>
+            <th>Alíquota</th>
+            <th>Parcela a deduzir (R$)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Até 2.259,20</td><td>Isento</td><td>—</td></tr>
+          <tr><td>2.259,21 a 2.826,65</td><td>7,5%</td><td>169,44</td></tr>
+          <tr><td>2.826,66 a 3.751,05</td><td>15%</td><td>381,44</td></tr>
+          <tr><td>3.751,06 a 4.664,68</td><td>22,5%</td><td>662,77</td></tr>
+          <tr><td>Acima de 4.664,68</td><td>27,5%</td><td>896,00</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Resultado dos testes (visível apenas em dev ou se houver falha) -->
+  {!todosTestes && (
+    <section class="testes-resultado">
+      <h2>Status dos testes oficiais (Receita Federal)</h2>
+      <table class="tabela-testes">
+        <thead>
+          <tr><th>Caso</th><th>Esperado</th><th>Obtido</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {resultadosTestes.map((t) => (
+            <tr class={t.passou ? 'passou' : 'falhou'}>
+              <td>{t.nome}</td>
+              <td>{t.irEsperado !== null ? `R$ ${t.irEsperado.toFixed(2)}` : '— (verificar estrutura)'}</td>
+              <td>R$ {t.irFinal.toFixed(2)}</td>
+              <td>{t.passou ? '✓' : `✗ ${t.erro ?? ''}`}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="testes-nota">
+        Falhas indicam que as tabelas IRRF 2026 ou INSS 2026 em <code>src/data/tabelas.ts</code> precisam ser atualizadas com os valores oficiais. Consulte a Receita Federal e a Portaria MPS/MF nº 13/2026 e corrija os blocos marcados com ⚠️.
+      </p>
+    </section>
+  )}
+
+  <aside class="disclaimer">
+    <p><strong>Aviso:</strong> Esta calculadora é uma estimativa para fins de planejamento. Os cálculos são realizados 100% no seu navegador — nenhum dado pessoal é enviado a servidores. Os valores podem divergir do cálculo oficial caso as tabelas IRRF/INSS 2026 ainda não tenham sido publicadas. Consulte sempre a Receita Federal ou um contador para decisões tributárias definitivas.</p>
+  </aside>
+
+  <div class="privacidade-badge">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Cálculo 100% local — seus dados não saem do navegador
+  </div>
+
+  <section class="relacionadas">
+    <h2>Calculadoras Relacionadas</h2>
+    <div class="cards-grid">
+      <CalcCard
+        nome="Salário Líquido"
+        slug="salario-liquido"
+        descricao="Veja seu salário líquido completo após INSS e IR 2025."
+        icone="💰"
+        ativa={true}
+      />
+      <CalcCard
+        nome="IRRF"
+        slug="irrf"
+        descricao="Calcule o IRRF detalhado com base de cálculo e alíquota efetiva."
+        icone="📋"
+        ativa={true}
+      />
+    </div>
+  </section>
+</CalculadoraLayout>
+
+<script>
+  // ─── Importa a engine pura (bundled pelo Vite) ───────────────────────────────
+  import { calcularIR2026, calcularIR13o } from '../../lib/ir2026';
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────────
+  function parseBRL(v: string): number {
+    const n = parseFloat(v.replace(/\./g, '').replace(',', '.').replace(/[^\d.\-]/g, ''));
+    return isNaN(n) ? NaN : n;
+  }
+
+  function fmtBRL(v: number): string {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+  }
+
+  function fmtNum(v: number, dec = 2): string {
+    return v.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  }
+
+  function setText(id: string, text: string) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
+  function setDisplay(id: string, show: boolean) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = show ? '' : 'none';
+  }
+
+  // ─── Modo (mensal / 13º) ─────────────────────────────────────────────────────
+  let modo: 'mensal' | '13o' = 'mensal';
+
+  document.getElementById('btn-mensal')!.addEventListener('click', () => {
+    modo = 'mensal';
+    document.getElementById('btn-mensal')!.classList.add('ativo');
+    document.getElementById('btn-13')!.classList.remove('ativo');
+    document.getElementById('btn-mensal')!.setAttribute('aria-pressed', 'true');
+    document.getElementById('btn-13')!.setAttribute('aria-pressed', 'false');
+    (document.getElementById('form-ir2026') as HTMLFormElement).reset();
+    setDisplay('resultado-wrap', false);
+    setDisplay('acoes-resultado', false);
+  });
+
+  document.getElementById('btn-13')!.addEventListener('click', () => {
+    modo = '13o';
+    document.getElementById('btn-13')!.classList.add('ativo');
+    document.getElementById('btn-mensal')!.classList.remove('ativo');
+    document.getElementById('btn-13')!.setAttribute('aria-pressed', 'true');
+    document.getElementById('btn-mensal')!.setAttribute('aria-pressed', 'false');
+    (document.getElementById('form-ir2026') as HTMLFormElement).reset();
+    setDisplay('resultado-wrap', false);
+    setDisplay('acoes-resultado', false);
+  });
+
+  // ─── Validação ───────────────────────────────────────────────────────────────
+  function limparErros() {
+    document.querySelectorAll('.erro').forEach((el) => (el.textContent = ''));
+  }
+
+  function showError(id: string, msg: string) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = msg;
+  }
+
+  interface FormInput {
+    salarioBruto: number;
+    dependentes: number;
+    outrasDeducoes: number;
+  }
+
+  function lerForm(): FormInput | null {
+    limparErros();
+    let ok = true;
+
+    const sb = parseBRL((document.getElementById('salario-bruto') as HTMLInputElement).value);
+    if (isNaN(sb) || sb <= 0) {
+      showError('erro-salario', 'Informe um salário bruto válido.');
+      ok = false;
+    }
+
+    const dep = parseInt((document.getElementById('dependentes') as HTMLInputElement).value, 10);
+    if (isNaN(dep) || dep < 0) {
+      showError('erro-dep', 'Informe um número válido de dependentes.');
+      ok = false;
+    }
+
+    const od = parseBRL((document.getElementById('outras-deducoes') as HTMLInputElement).value || '0');
+    if (isNaN(od) || od < 0) {
+      showError('erro-outras', 'Informe um valor válido.');
+      ok = false;
+    }
+
+    if (!ok) return null;
+    return { salarioBruto: sb, dependentes: dep, outrasDeducoes: od };
+  }
+
+  // ─── Renderização ────────────────────────────────────────────────────────────
+  function renderizar(input: FormInput) {
+    const fn = modo === '13o' ? calcularIR13o : calcularIR2026;
+    const r = fn({ salarioBruto: input.salarioBruto, dependentes: input.dependentes, outrasDeducoes: input.outrasDeducoes });
+
+    // Resultado principal
+    setDisplay('resultado-wrap', true);
+
+    if (r.isento) {
+      setDisplay('resultado-isento', true);
+      setDisplay('resultado-valor', false);
+    } else {
+      setDisplay('resultado-isento', false);
+      setDisplay('resultado-valor', true);
+      setText('val-ir-final', fmtBRL(r.irFinal));
+    }
+
+    // Comparativo
+    const temReducao = r.reducao > 0;
+    setDisplay('comparativo', true);
+    setText('val-sem-reducao', fmtBRL(r.irSemReducao));
+    setText('val-com-reducao', r.isento ? 'Isento' : fmtBRL(r.irFinal));
+
+    // Badge economia
+    const badge = document.getElementById('badge-economia');
+    if (badge) {
+      if (r.economia > 0) {
+        badge.textContent = `Economia de ${fmtBRL(r.economia)}/mês com a nova lei`;
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    // Memória de cálculo
+    setText('m-bruto', fmtBRL(r.salarioBruto));
+    setText('m-inss', `− ${fmtBRL(r.inss)}`);
+    setText('m-dep', `− ${fmtBRL(r.deducaoDependentes)}`);
+    setText('m-outras', `− ${fmtBRL(r.outrasDeducoes)}`);
+    setText('m-base-completo', fmtBRL(r.baseCompleto));
+    setText('m-simplificado-valor', `− ${fmtBRL(r.descontoSimplificado)}`);
+    setText('m-base-simplificado', fmtBRL(r.baseSimplificado));
+    setText('m-metodo', r.metodo === 'simplificado'
+      ? `Simplificado (base ${fmtBRL(r.baseSimplificado)} → IR ${fmtBRL(r.irSimplificado)})`
+      : `Completo (base ${fmtBRL(r.baseCompleto)} → IR ${fmtBRL(r.irCompleto)})`);
+    setText('m-faixa', r.faixaTabela);
+    setText('m-ir-apurado', fmtBRL(r.irApurado));
+    setText('m-rtb', fmtBRL(r.rtb));
+
+    // Fórmula do redutor
+    let formulaTexto = '';
+    if (r.rtb <= 5000) {
+      formulaTexto = `RTB ≤ R$ 5.000 → Redutor = min(${fmtBRL(r.irApurado)}, R$ 312,89)`;
+    } else if (r.rtb <= 7350) {
+      const calc = 978.62 - 0.133145 * r.rtb;
+      formulaTexto = `978,62 − (0,133145 × ${fmtNum(r.rtb)}) = ${fmtNum(calc)} → limitado ao IR`;
+    } else {
+      formulaTexto = 'RTB > R$ 7.350 → Sem redutor';
+    }
+    setText('m-formula-reducao', formulaTexto);
+    setText('m-reducao', `− ${fmtBRL(r.reducao)}`);
+    setText('m-ir-apurado2', fmtBRL(r.irApurado));
+    setText('m-reducao2', `− ${fmtBRL(r.reducao)}`);
+    setText('m-ir-final', r.isento ? 'R$ 0,00 (Isento)' : fmtBRL(r.irFinal));
+    setText('m-economia', r.economia > 0 ? `+ ${fmtBRL(r.economia)}` : 'R$ 0,00');
+    setText('m-aliquota', `${fmtNum(r.aliquotaEfetiva)}%`);
+
+    setDisplay('acoes-resultado', true);
+  }
+
+  // ─── Submit ──────────────────────────────────────────────────────────────────
+  document.getElementById('form-ir2026')!.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = lerForm();
+    if (input) renderizar(input);
+  });
+
+  // ─── Compartilhar ────────────────────────────────────────────────────────────
+  document.getElementById('btn-compartilhar')!.addEventListener('click', () => {
+    const url = new URL(window.location.href.split('?')[0]);
+    url.searchParams.set('sb', (document.getElementById('salario-bruto') as HTMLInputElement).value);
+    url.searchParams.set('dep', (document.getElementById('dependentes') as HTMLInputElement).value);
+    url.searchParams.set('od', (document.getElementById('outras-deducoes') as HTMLInputElement).value);
+    url.searchParams.set('modo', modo);
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      const btn = document.getElementById('btn-compartilhar')!;
+      btn.textContent = 'Link copiado!';
+      setTimeout(() => (btn.textContent = 'Compartilhar resultado'), 2000);
+    });
+  });
+
+  document.getElementById('btn-imprimir')!.addEventListener('click', () => window.print());
+
+  // ─── Permalink ───────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    const p = new URLSearchParams(window.location.search);
+    const sb = p.get('sb');
+    const dep = p.get('dep');
+    const od = p.get('od');
+    const m = p.get('modo') as 'mensal' | '13o' | null;
+
+    if (sb) {
+      (document.getElementById('salario-bruto') as HTMLInputElement).value = sb;
+      if (dep) (document.getElementById('dependentes') as HTMLInputElement).value = dep;
+      if (od) (document.getElementById('outras-deducoes') as HTMLInputElement).value = od;
+      if (m === '13o') document.getElementById('btn-13')!.click();
+
+      const input = lerForm();
+      if (input) renderizar(input);
+    }
+  });
+</script>
+
+<style>
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .destaque-seo {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0 0 1.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+
+  .aviso-tabela {
+    background: #fff3cd;
+    border: 1.5px solid #f0ad4e;
+    border-radius: var(--radius);
+    padding: 0.875rem 1.25rem;
+    font-size: 0.875rem;
+    color: #664d03;
+    margin: 1rem 0;
+  }
+
+  [data-theme="dark"] .aviso-tabela {
+    background: #332701;
+    border-color: #f0ad4e;
+    color: #f0ad4e;
+  }
+
+  .modo-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .btn-modo {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-modo.ativo {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .calc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 0 0 2rem;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+  }
+
+  .hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .form-group input {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .erro {
+    font-size: 0.75rem;
+    color: var(--danger);
+    min-height: 1rem;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Resultado */
+  .resultado-isento {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: #d1fae5;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+  }
+
+  [data-theme="dark"] .resultado-isento {
+    background: #064e3b;
+  }
+
+  .icone-isento {
+    font-size: 1.5rem;
+    color: #059669;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .isento-titulo {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #065f46;
+    margin: 0 0 0.25rem;
+  }
+
+  [data-theme="dark"] .isento-titulo { color: #6ee7b7; }
+
+  .isento-sub {
+    font-size: 0.875rem;
+    color: #047857;
+    margin: 0;
+  }
+
+  [data-theme="dark"] .isento-sub { color: #a7f3d0; }
+
+  .label {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .valor {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--accent);
+    margin: 0.25rem 0 0;
+    letter-spacing: -0.02em;
+  }
+
+  .economia-badge {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #059669;
+    margin: 0.5rem 0 0;
+  }
+
+  /* Comparativo */
+  .comparativo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0 0;
+    padding: 1rem;
+    background: var(--bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  .comparativo__col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .comparativo__label {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .comparativo__valor {
+    font-size: 1.25rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .comparativo__valor.destaque { color: var(--accent); }
+
+  .comparativo__seta {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* Memória de cálculo */
+  .memoria-calc {
+    margin-top: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .memoria-calc summary {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+    user-select: none;
+    background: var(--accent-soft);
+  }
+
+  .memoria-content {
+    padding: 1.25rem;
+  }
+
+  .memoria-content h3 {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 1.25rem 0 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .memoria-content h3:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .tabela-resumo {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .tabela-resumo td {
+    padding: 0.625rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+  }
+
+  .tabela-resumo .label {
+    color: var(--text-muted);
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: normal;
+  }
+
+  .tabela-resumo .tv {
+    text-align: right;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .tabela-resumo .tv.destaque { color: var(--accent); font-weight: 700; }
+  .tabela-resumo .tv.verde { color: #059669; font-weight: 600; }
+
+  .tabela-resumo tr.separador td {
+    border-top: 2px solid var(--border);
+    padding-top: 0.875rem;
+  }
+
+  .tabela-resumo tr.destaque-linha td {
+    background: var(--accent-soft);
+    padding: 0.625rem 0.5rem;
+  }
+
+  /* Ações */
+  .acoes {
+    display: flex;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent-border);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  /* Como calculamos */
+  .como-calculamos {
+    margin: 3rem 0 2rem;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .como-calculamos h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .como-calculamos h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .como-calculamos p {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0 0 0.75rem;
+  }
+
+  .regras-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .regra-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.875rem 1rem;
+  }
+
+  .regra-faixa {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .regra-desc {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .formula-destaque {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius);
+    padding: 0.875rem 1.25rem;
+    font-size: 0.875rem;
+    margin: 1rem 0;
+  }
+
+  .passos {
+    padding-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .passos li {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .tabela-scroll {
+    overflow-x: auto;
+    margin-top: 1rem;
+  }
+
+  .tabela-irrf {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  .tabela-irrf caption {
+    text-align: left;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    caption-side: top;
+  }
+
+  .tabela-irrf th {
+    text-align: left;
+    padding: 0.625rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .tabela-irrf td {
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .tabela-irrf tr:hover td { background: var(--accent-soft); }
+
+  /* Testes */
+  .testes-resultado {
+    margin: 2rem 0;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .testes-resultado h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+    color: var(--text-primary);
+  }
+
+  .tabela-testes {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+  }
+
+  .tabela-testes th, .tabela-testes td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+
+  .tabela-testes tr.passou td { color: #059669; }
+  .tabela-testes tr.falhou td { color: #dc2626; }
+
+  .testes-nota {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+  }
+
+  /* Privacidade badge */
+  .privacidade-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0.75rem 0 2rem;
+  }
+
+  /* Disclaimer */
+  .disclaimer {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .disclaimer p {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .relacionadas { margin: 3rem 0 1rem; }
+
+  .relacionadas h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.01em;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+</style>

@@ -58,4 +58,12 @@ export const calculadoras: Calculadora[] = [
     icone: 'percent',
     ativa: true,
   },
+  {
+    nome: 'Imposto de Renda 2026',
+    slug: 'imposto-de-renda-2026',
+    descricao: 'Calcule seu IR 2026 com a Lei 15.270/2025: isenção até R$ 5.000 e redução parcial até R$ 7.350.',
+    categoria: 'impostos',
+    icone: 'file-text',
+    ativa: true,
+  },
 ];
